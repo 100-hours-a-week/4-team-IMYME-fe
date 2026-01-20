@@ -113,4 +113,6 @@ jobs:
             **Branch:** ${{ github.ref_name }}
             **Commit:** ${{ github.sha }}
             **Author:** ${{ github.actor }}
+            **에러 로그 보기:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
           color: 0xff0000
