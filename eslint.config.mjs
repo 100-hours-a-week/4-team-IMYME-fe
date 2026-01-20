@@ -1,8 +1,8 @@
 import tseslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import prettierConfig from 'eslint-config-prettier'
-import prettierPlugin from 'eslint-plugin-prettier'
 import nextConfig from 'eslint-config-next/core-web-vitals'
+import prettierPlugin from 'eslint-plugin-prettier'
 import globals from 'globals'
 
 const FILES_TO_LINT = ['**/*.{ts,tsx,js,jsx}']
