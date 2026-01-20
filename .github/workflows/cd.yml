@@ -1,0 +1,101 @@
+name: Frontend CD
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - dev
+  push:
+    branches:
+      - infra/cicd
+
+jobs:
+  deploy-dev:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ SSH 설정
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEV_SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DEV_SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      # 2️⃣ 프론트엔드 배포
+      - name: Deploy Frontend to Dev Server
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEV_SERVER_HOST }} 'bash -s' <<'EOF'
+          set -e
+
+          echo "🚀 Frontend Deploy Start"
+
+          cd /home/ubuntu/mine/frontend/4-team-IMYME-fe
+
+          echo "📥 Git sync"
+          git fetch origin develop
+          git reset --hard origin/develop
+
+          echo "📦 Install pnpm & deps"
+          corepack enable
+          pnpm install
+
+          echo "🏗 Build"
+          pnpm next build
+
+          echo "🧹 Clean old build"
+          rm -rf /var/www/frontend/*
+
+          echo "📤 Deploy build artifacts"
+          cp -r .next /var/www/frontend/.next
+          cp -r public /var/www/frontend/public
+          cp package.json /var/www/frontend/
+
+          echo "🔁 Restart frontend (if using pm2)"
+          pm2 restart frontend || pm2 start pnpm --name frontend -- start
+
+          echo "🎉 Frontend Deploy Finished"
+          EOF
+
+  # ========================================
+  # 성공 알림
+  # ========================================
+  notify-success:
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+    if: success()
+    steps:
+      - name: Discord notification on success
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: success
+          title: "🟢 Frontend Deploy Success"
+          content: "프론트엔드 개발서버 배포 완료!"
+          description: |
+            **Branch:** develop
+            **Commit:** ${{ github.sha }}
+            **서버:** Dev Frontend
+          color: 0x00ff00
+
+  # ========================================
+  # 실패 알림
+  # ========================================
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+    if: failure()
+    steps:
+      - name: Discord notification on failure
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: failure
+          title: "🔴 Frontend Deploy Failed"
+          content: "<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 배포 실패!"
+          description: |
+            **Branch:** develop
+            **Commit:** ${{ github.sha }}
+            **에러 로그:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          color: 0xff0000
