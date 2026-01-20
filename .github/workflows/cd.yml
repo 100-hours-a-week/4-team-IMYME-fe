@@ -44,9 +44,9 @@ jobs:
           pnpm next build
 
           echo "📁 Ensure deploy directory"
-          mkdir -p /var/www/frontendㄴ
+          sudo mkdir -p /var/www/frontend
 
-          echo "🧹 Clean old build"ㄴ
+          echo "🧹 Clean old build"
           rm -rf /var/www/frontend/*
 
           echo "📤 Deploy build artifacts"
