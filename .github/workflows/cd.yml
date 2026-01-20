@@ -53,7 +53,6 @@ jobs:
 
           echo "📤 Deploy build artifacts"
           cp -r .next /var/www/frontend/.next
-          cp -r public /var/www/frontend/public
           cp package.json /var/www/frontend/
 
           echo "🔁 Restart frontend (if using pm2)"
