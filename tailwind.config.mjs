@@ -3,7 +3,7 @@ const RADIUS_OFFSET_SM = '4px'
 
 /** @type {import('tailwindcss').Config} */
 const config = {
-  content: ['./src/app/**/*.{ts,tsx}', './src/shared/**/*.{ts,tsx}'],
+  content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       borderRadius: {

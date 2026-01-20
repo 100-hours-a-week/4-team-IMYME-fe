@@ -1,3 +1,7 @@
 export function MainPage() {
-  return <div>Main Page</div>
+  return (
+    <div className="w-full">
+      <div>Main Page</div>
+    </div>
+  )
 }
