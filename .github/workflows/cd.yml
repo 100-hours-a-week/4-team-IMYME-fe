@@ -34,8 +34,8 @@ jobs:
           cd /home/ubuntu/mine/frontend/4-team-IMYME-fe
 
           echo "📥 Git sync"
-          git fetch origin develop
-          git reset --hard origin/develop
+          git fetch origin 
+          git reset --hard origin/dev
 
           echo "📦 Install pnpm & deps"
           corepack enable
@@ -74,7 +74,7 @@ jobs:
           title: "🟢 Frontend Deploy Success"
           content: "프론트엔드 개발서버 배포 완료!"
           description: |
-            **Branch:** develop
+            **Branch:** dev
             **Commit:** ${{ github.sha }}
             **서버:** Dev Frontend
           color: 0x00ff00
@@ -95,7 +95,7 @@ jobs:
           title: "🔴 Frontend Deploy Failed"
           content: "<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 배포 실패!"
           description: |
-            **Branch:** develop
+            **Branch:** dev
             **Commit:** ${{ github.sha }}
             **에러 로그:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           color: 0xff0000
