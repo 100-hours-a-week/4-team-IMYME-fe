@@ -1,3 +1,5 @@
+import { Button } from '@/shared/ui/button'
+
 export default function LoginPage() {
   return (
     // <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-4">
@@ -5,6 +7,12 @@ export default function LoginPage() {
     // </main>
     <div className="mx-auto flex min-h-screen flex-col items-center justify-center">
       <h1 className="text-3xl font-semibold text-[rgb(var(--color-primary))]">MINE</h1>
+      <Button
+        variant={'login'}
+        size={'lg'}
+      >
+        카카오로 시작하기
+      </Button>
     </div>
   )
 }
