@@ -7,7 +7,7 @@ import globals from "globals";
 
 const FILES_TO_LINT = ["**/*.{ts,tsx,js,jsx}"];
 
-export default [
+const config = [
   { ignores: ["node_modules/*", "dist/", ".vite/", ".next/"] },
   ...nextConfig,
   ...tseslint.configs["flat/recommended"],
@@ -53,3 +53,5 @@ export default [
     },
   },
 ];
+
+export default config;
