@@ -1,17 +1,17 @@
 name: Frontend CD
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - dev
+  # pull_request:
+  #   types: [closed]
+  #   branches:
+  #     - dev
   push:
     branches:
       - infra/cicd
 
 jobs:
   deploy-dev:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
