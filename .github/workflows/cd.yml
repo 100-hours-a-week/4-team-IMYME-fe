@@ -56,7 +56,9 @@ jobs:
           cp package.json /var/www/frontend/
 
           echo "🔁 Restart frontend (if using pm2)"
-          pm2 restart frontend || pm2 start npx --name frontend -- next start -p 3000
+          pm2 delete frontend || true
+          pm2 start npx --name frontend -- next start -p 3000
+
 
           echo "🎉 Frontend Deploy Finished"
           EOF
