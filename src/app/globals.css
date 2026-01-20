@@ -1,7 +1,53 @@
 @import 'tailwindcss';
 
+:root {
+  --color-primary: 64 141 254;
+  --color-primary-foreground: 255 255 255;
+  --color-background: 250 252 255;
+  --color-foreground: 15 23 42;
+  --color-muted: 248 250 252;
+  --color-muted-foreground: 100 116 139;
+  --color-border: 226 232 240;
+  --frame-max-width: 420px;
+  --frame-min-width: 390px;
+  --frame-radius: 24px;
+  --frame-shadow: rgba(100, 100, 100, 0.2) 0 0 29px 0;
+  --frame-outer-padding-x: 16px;
+  --frame-outer-padding-y: 24px;
+}
+
 @layer base {
   body {
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
     margin: 0;
+  }
+}
+
+.app-shell {
+  background-color: #fff;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-frame {
+  background-color: rgb(var(--color-background));
+  margin: 0 auto;
+  min-height: 100vh;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .app-frame {
+    box-shadow: var(--frame-shadow);
+    max-width: var(--frame-max-width);
+    min-width: var(--frame-min-width);
+  }
+}
+
+@layer components {
+  .btn-login {
+    background-color: rgb(var(--color-primary));
+    color: white;
   }
 }

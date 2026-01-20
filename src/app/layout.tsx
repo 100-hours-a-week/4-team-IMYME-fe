@@ -3,8 +3,8 @@ import type { ReactNode } from 'react'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'IMYME',
-  description: 'Project scaffold',
+  title: 'MINE',
+  description: "IMYME's Project",
 }
 
 type RootLayoutProps = {
@@ -14,7 +14,9 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body className="app-shell">
+        <div className="app-frame">{children}</div>
+      </body>
     </html>
   )
 }
