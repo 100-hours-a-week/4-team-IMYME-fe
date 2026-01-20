@@ -2,3 +2,5 @@ node_modules
 .next
 dist
 pnpm-lock.yaml
+.github/workflows/ci.yml
+.github/workflows/cd.yml
