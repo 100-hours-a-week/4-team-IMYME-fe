@@ -8,6 +8,7 @@
   --color-muted: 248 250 252;
   --color-muted-foreground: 100 116 139;
   --color-border: 226 232 240;
+  --color-border-primary: 64 141 254;
   --frame-max-width: 420px;
   --frame-min-width: 390px;
   --frame-radius: 24px;
@@ -49,5 +50,28 @@
   .btn-login {
     background-color: rgb(var(--color-primary));
     color: white;
+  }
+
+  .modal-bg {
+    background-color: rgb(var(--color-background));
+  }
+
+  .modal-btn-primary {
+    height: 50px;
+    width: 250px;
+    background-color: rgb(var(--color-background));
+    border-color: rgb(var(--color-primary));
+    border-width: 1px;
+    color: rgb(var(--color-primary));
+  }
+
+  .modal-btn-primary:hover,
+  .modal-btn-primary:active {
+    background-color: rgb(var(--color-primary));
+    color: rgb(var(--color-primary-foreground));
+  }
+
+  .border-primary {
+    border-color: rgb(var(--color-primary));
   }
 }
