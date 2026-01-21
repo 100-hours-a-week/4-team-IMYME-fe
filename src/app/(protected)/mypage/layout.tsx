@@ -1,4 +1,4 @@
-import { MenuVisibleLayout } from '@/widgets/layouts/MenuVisibleLayout'
+import { MenuVisibleLayout } from '@/widgets/layouts/ui/MenuVisibleLayout'
 import type { ReactNode } from 'react'
 
 type MyPageLayoutProps = {

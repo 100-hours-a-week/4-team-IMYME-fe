@@ -17,6 +17,7 @@ const buttonVariants = cva(
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         login: 'btn-login',
+        modal_btn_primary: 'modal-btn-primary',
       },
       size: {
         default: 'h-9 px-4 py-2',

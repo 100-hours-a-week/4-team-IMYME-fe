@@ -1,4 +1,4 @@
-import { LoginButton } from '@/features/auth/ui/client/LoginButton'
+import { LoginButton } from '@/features/auth'
 
 export function LoginPage() {
   return (
