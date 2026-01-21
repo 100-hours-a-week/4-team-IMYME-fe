@@ -1,6 +1,12 @@
-import { type ChangeEvent, type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode } from 'react'
 
-import { ProfileImage, NicknameInput, ProfileEditButton } from '@/features/profile'
+import {
+  ProfileImage,
+  NicknameInput,
+  ProfileEditButton,
+  useNicknameForm,
+  useProfileImageForm,
+} from '@/features/profile-edit'
 import defaultAvatar from '@/shared/assets/images/default-avatar.svg'
 import {
   Dialog,
@@ -14,8 +20,10 @@ import {
 
 const MODAL_CONTENT_CLASS = 'flex flex-col sm:min-h-[450px] sm:max-w-[350px] items-center'
 const LABEL_CLASS = 'self-start font-semibold'
-const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/heic', 'image/webp']
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
+
+const NICKNAME_TOO_SHORT_HELPER = '닉네임은 2자 이상 입력해주세요.'
+const NICKNAME_TOO_LONG_HELPER = '닉네임은 10자 이하로 입력해주세요.'
+// const NICKNAME_DUPLICATE_HELPER = '이미 사용 중인 닉네임입니다.'
 
 type ProfileEditModalProps = {
   trigger: ReactNode
@@ -23,47 +31,30 @@ type ProfileEditModalProps = {
 }
 
 export function ProfileEditModal({ trigger, onClose }: ProfileEditModalProps) {
-  const [nickname, setNickname] = useState('')
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-
-  useEffect(() => {
-    return () => {
-      if (imagePreview) {
-        URL.revokeObjectURL(imagePreview)
-      }
-    }
-  }, [imagePreview])
-
-  const handleProfileImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) {
-      setImagePreview(null)
-      return
-    }
-
-    if (!ACCEPTED_TYPES.includes(file.type) || file.size > MAX_FILE_SIZE_BYTES) {
-      setImagePreview(null)
-      return
-    }
-
-    const nextPreview = URL.createObjectURL(file)
-    setImagePreview(nextPreview)
-  }
-
-  const handleNicknameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setNickname(event.target.value)
-  }
+  const {
+    imagePreview,
+    handleFileChange,
+    acceptTypes,
+    errorMessage: profileImageErrorMessage,
+  } = useProfileImageForm()
+  const {
+    nickname,
+    handleNicknameChange,
+    handleNicknameBlur,
+    hasNicknameError,
+    errorMessage: nicknameErrorMessage,
+  } = useNicknameForm()
 
   const handleProfileEdit = () => {}
 
-  const handleProfileOpenChange = (nextOpen: boolean) => {
+  const handleProfileModalOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       onClose?.()
     }
   }
 
   return (
-    <Dialog onOpenChange={handleProfileOpenChange}>
+    <Dialog onOpenChange={handleProfileModalOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className={MODAL_CONTENT_CLASS}>
         <DialogHeader className="items-center">
@@ -72,12 +63,17 @@ export function ProfileEditModal({ trigger, onClose }: ProfileEditModalProps) {
         <DialogDescription className={LABEL_CLASS}>프로필 이미지</DialogDescription>
         <ProfileImage
           imageSrc={imagePreview ?? defaultAvatar}
-          onChange={handleProfileImageChange}
+          onChange={handleFileChange}
+          acceptTypes={acceptTypes}
+          errorMessage={profileImageErrorMessage}
         />
         <DialogDescription className={LABEL_CLASS}>닉네임</DialogDescription>
         <NicknameInput
           value={nickname}
           onChange={handleNicknameChange}
+          onBlur={handleNicknameBlur}
+          helperMessage={hasNicknameError ? nicknameErrorMessage : null}
+          helperVariant={hasNicknameError ? 'error' : 'default'}
         />
         <DialogFooter>
           <ProfileEditButton onClick={handleProfileEdit} />

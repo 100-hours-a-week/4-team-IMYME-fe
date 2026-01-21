@@ -4,7 +4,7 @@ import { type ReactNode, useState } from 'react'
 
 import { LogoutButton } from '@/features/auth'
 import { HelpButton } from '@/features/help'
-import { ProfileEditButton, ProfileEditModal } from '@/features/profile'
+import { ProfileEditButton, ProfileEditModal } from '@/features/profile-edit'
 import {
   Dialog,
   DialogContent,
