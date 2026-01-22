@@ -108,8 +108,7 @@ jobs:
           path: .next/
           retention-days: 15
           overwrite: true
-          include-hidden-files: true  # 이거 추가!
-
+          include-hidden-files: true # 이거 추가!
 
   ci-notify-success:
     needs: ci
