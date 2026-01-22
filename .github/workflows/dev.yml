@@ -186,7 +186,8 @@ jobs:
 
           # 2. 의존성 설치
           cd "$RELEASE_DIR"
-          pnpm install --prod --frozen-lockfile
+          pnpm install --prod --ignore-scripts --force
+
 
           # 3. current 심볼릭 링크 교체
           rm -rf "$CURRENT_LINK"
