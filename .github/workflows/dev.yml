@@ -205,6 +205,24 @@ jobs:
           pm2 delete frontend || true
           pm2 start npx --name frontend -- next start -p 3000
 
+          # 6. Health Check
+          echo "🔍 Frontend health check"
+          for i in {1..10}; do
+            if curl -sf http://127.0.0.1:3000/api/front/health > /dev/null; then
+              echo "✅ Frontend health check passed"
+              break
+            fi
+            echo "⏳ Waiting for frontend..."
+            sleep 3
+          done
+
+          if ! curl -sf http://127.0.0.1:3000/api/front/health > /dev/null; then
+            echo "❌ Frontend health check failed"
+            pm2 logs frontend --lines 50
+            exit 1
+          fi
+
+
           EOF
 
   cd-notify-success:
