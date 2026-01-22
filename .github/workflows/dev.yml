@@ -170,31 +170,32 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEV_SERVER_HOST }} 'bash -s' <<'EOF'
           set -e
-
+        
           APP_DIR=/home/ubuntu/mine/frontend
           RELEASES_DIR=$APP_DIR/releases
           SHARED_DIR=$APP_DIR/shared
           RELEASE_ID=$(date +%Y%m%d%H%M%S)
-
+        
           CURRENT_LINK=$APP_DIR/current
           RELEASE_DIR=$RELEASES_DIR/$RELEASE_ID
           LOG_DIR=$SHARED_DIR/logs
-
-          mkdir -p "$RELEASE_DIR" "$LOG_DIR"
-
-          # 1. 빌드 아티팩트 이동
-          cp -r $APP_DIR/build/. "$RELEASE_DIR"/
-
+        
+          mkdir -p "$RELEASE_DIR/.next" "$LOG_DIR"
+        
+          # 1. 빌드 아티팩트를 .next 폴더로 이동
+          cp -r $APP_DIR/build/. "$RELEASE_DIR/.next/"
+        
           # 2. current 심볼릭 링크 교체
           ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
-
+        
           # 3. 이전 release 3개만 유지
           ls -1dt "$RELEASES_DIR"/* | tail -n +4 | xargs -r rm -rf
-
-          # 4. PM2로 프론트 서버 재시작
+        
+          # 4. PM2로 프론트 서버 재시작 (current 디렉토리에서 실행)
+          cd "$CURRENT_LINK"
           pm2 delete frontend || true
           pm2 start npx --name frontend -- next start -p 3000
-
+        
           EOF
 
   cd-notify-success:
