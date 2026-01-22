@@ -65,7 +65,21 @@ jobs:
       - name: Build
         run: pnpm next build
 
-      # 9. 이전 아티팩트 삭제
+      # 9. 디버깅 - 빌드 결과 확인
+      - name: Debug - Check build output
+        run: |
+          echo "=== Current directory ==="
+          pwd
+          echo "=== Root directory contents ==="
+          ls -la
+          echo "=== .next directory ==="
+          ls -la .next/ || echo ".next NOT FOUND"
+          echo "=== Find all possible build folders ==="
+          find . -type d -name ".next" 2>/dev/null
+          find . -type d -name "out" 2>/dev/null
+          find . -type d -name "build" 2>/dev/null
+
+      # 10. 이전 아티팩트 삭제
       - name: Delete old artifacts
         if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
         uses: actions/github-script@v7
@@ -85,7 +99,7 @@ jobs:
               }
             }
 
-      # 10. 빌드 결과 업로드
+      # 11. 빌드 결과 업로드
       - name: Upload artifact
         if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
         uses: actions/upload-artifact@v4
@@ -143,7 +157,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-dev-latest
-          path: ./frontend-build # 다운로드 경로 지정
+          path: ./frontend-build
 
       # 3. 서버 전송
       - name: Copy artifact to dev server
