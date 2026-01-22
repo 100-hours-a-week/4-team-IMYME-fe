@@ -143,12 +143,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-dev-latest
-          path: .next/
+          path: ./frontend-build  # 다운로드 경로 지정
 
       # 3. 서버 전송
       - name: Copy artifact to dev server
         run: |
-          scp -i ~/.ssh/id_rsa -r ./build/* ubuntu@${{ secrets.DEV_SERVER_HOST }}:/home/ubuntu/mine/frontend
+          scp -i ~/.ssh/id_rsa -r ./frontend-build/* ubuntu@${{ secrets.DEV_SERVER_HOST }}:/home/ubuntu/mine/frontend/build
 
       # 4. 배포 (release/current 구조)
       - name: Deploy to Dev Server
