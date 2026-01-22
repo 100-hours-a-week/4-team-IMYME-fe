@@ -2,9 +2,9 @@ name: Frontend CD (v. 1.0)
 
 on:
   pull_request:
-      types: [ closed ]
-      branches:
-          - dev
+    types: [closed]
+    branches:
+      - dev
   # push:
   #   branches:
   #     - infra/cicd
@@ -76,8 +76,8 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: success
-          title: "🟢 Frontend Deploy Success"
-          content: "프론트엔드 개발서버 배포 완료!"
+          title: '🟢 Frontend Deploy Success'
+          content: '프론트엔드 개발서버 배포 완료!'
           description: |
             **Branch:** dev
             **Commit:** ${{ github.sha }}
@@ -97,8 +97,8 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: failure
-          title: "🔴 Frontend Deploy Failed"
-          content: "<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 배포 실패!"
+          title: '🔴 Frontend Deploy Failed'
+          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 배포 실패!'
           description: |
             **Branch:** dev
             **Commit:** ${{ github.sha }}
