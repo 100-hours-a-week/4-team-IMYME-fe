@@ -1,14 +1,10 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-
 import { Button } from '@/shared/ui/button'
 
 export function LoginButton() {
-  const router = useRouter()
-
-  const handleKakaoLoginClick = () => {
-    router.push('/main')
+  const handleKakaoLoginClick = async () => {
+    window.location.href = '/api/auth/kakao'
   }
 
   return (
