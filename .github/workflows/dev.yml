@@ -1,0 +1,212 @@
+name: Frontend CI/CD v1
+
+on:
+  pull_request:
+    branches:
+      - dev
+  push:
+    branches:
+      - dev
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: frontend-cicd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+
+  # 1) CI
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Node.js 설정
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3. pnpm 설치
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      # 4. pnpm 캐시
+      - name: Cache pnpm
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      # 5. 의존성 설치
+      - name: Install dependencies
+        run: pnpm install
+
+      # 6. 정적 분석
+      - name: Run ESLint
+        run: pnpm lint
+      - name: Run Prettier
+        run: pnpm prettier --check .
+
+      # 7. 타입 체크
+      - name: Type Check
+        run: pnpm tsc --noEmit
+
+      # 8. 빌드
+      - name: Build
+        run: pnpm next build
+
+      # 9. 이전 아티팩트 삭제
+      - name: Delete old artifacts
+        if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            for (const artifact of artifacts.data.artifacts) {
+              if (artifact.name === 'frontend-dev-latest') {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id,
+                });
+              }
+            }
+
+      # 10. 빌드 결과 업로드
+      - name: Upload artifact
+        if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dev-latest
+          path: .next/
+          retention-days: 15
+          overwrite: true
+
+  ci-notify-success:
+    needs: ci
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord CI success
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: success
+          title: "🟢 Frontend CI Success"
+          content: "<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 CI 성공!"
+          color: 0x00ff00
+  
+  ci-notify-failure:
+    needs: ci
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord CI failure
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: failure
+          title: "🔴 Frontend CI Failed"
+          content: "<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 CI 실패!"
+          color: 0xff0000
+  
+  # 2) CD
+  cd:
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. SSH 설정
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEV_SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DEV_SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      # 2. 아티팩트 다운로드
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dev-latest
+          path: ./next
+
+      # 3. 서버 전송
+      - name: Copy artifact to dev server
+        run: |
+          scp -i ~/.ssh/id_rsa -r ./build/* ubuntu@${{ secrets.DEV_SERVER_HOST }}:/home/ubuntu/mine/frontend
+
+      # 4. 배포 (release/current 구조)
+      - name: Deploy to Dev Server
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEV_SERVER_HOST }} 'bash -s' <<'EOF'
+          set -e
+
+          APP_DIR=/home/ubuntu/mine/frontend
+          RELEASES_DIR=$APP_DIR/releases
+          SHARED_DIR=$APP_DIR/shared
+          RELEASE_ID=$(date +%Y%m%d%H%M%S)
+
+          CURRENT_LINK=$APP_DIR/current
+          RELEASE_DIR=$RELEASES_DIR/$RELEASE_ID
+          LOG_DIR=$SHARED_DIR/logs
+
+          mkdir -p "$RELEASE_DIR" "$LOG_DIR"
+
+          # 1. 빌드 아티팩트 이동
+          cp -r $APP_DIR/build/. "$RELEASE_DIR"/
+
+          # 2. current 심볼릭 링크 교체
+          ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
+
+          # 3. 이전 release 3개만 유지
+          ls -1dt "$RELEASES_DIR"/* | tail -n +4 | xargs -r rm -rf
+
+          # 4. PM2로 프론트 서버 재시작
+          pm2 delete frontend || true
+          pm2 start npx --name frontend -- next start -p 3000
+
+          EOF
+
+  cd-notify-success:
+    needs: cd
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord CD success
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: success
+          title: "🟢 Frontend Deploy Success"
+          content: "프론트엔드 개발 서버 배포 완료!"
+          color: 0x00ff00
+
+  cd-notify-failure:
+    needs: cd
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord CD failure
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: failure
+          title: "🔴 Frontend Deploy Failed"
+          content: "<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 개발 서포 배포 실패!"
+          color: 0xff0000
