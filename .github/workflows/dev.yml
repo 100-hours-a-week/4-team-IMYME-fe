@@ -63,6 +63,10 @@ jobs:
 
       # 8. 빌드
       - name: Build
+        env:
+          NEXT_PUBLIC_KAKAO_REST_API_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_REST_API_KEY }}
+          NEXT_PUBLIC_KAKAO_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_KAKAO_REDIRECT_URI }}
+
         run: pnpm next build
 
       # 9. 이전 아티팩트 삭제
@@ -140,6 +144,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 0️⃣ Runner IP 획득 및 보안 그룹 추가
+      - name: Get Runner IP
+        id: ip
+        run: echo "ipv4=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT
+
+      - name: Add IP to Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.AWS_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr "${{ steps.ip.outputs.ipv4 }}/32"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-northeast-2
+
       # 1. SSH 설정
       - name: Set up SSH
         run: |
@@ -201,7 +222,39 @@ jobs:
           pm2 delete frontend || true
           pm2 start npx --name frontend -- next start -p 3000
 
+          # 6. Health Check
+          echo "🔍 Frontend health check"
+          for i in {1..10}; do
+            if curl -sf http://127.0.0.1:3000/api/front/health > /dev/null; then
+              echo "✅ Frontend health check passed"
+              break
+            fi
+            echo "⏳ Waiting for frontend..."
+            sleep 3
+          done
+
+          if ! curl -sf http://127.0.0.1:3000/api/front/health > /dev/null; then
+            echo "❌ Frontend health check failed"
+            pm2 logs frontend --lines 50
+            exit 1
+          fi
+
+
           EOF
+
+      # 5️. 보안 그룹에서 IP 제거 (항상 실행)
+      - name: Remove IP from Security Group
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.AWS_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr "${{ steps.ip.outputs.ipv4 }}/32"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-northeast-2
 
   cd-notify-success:
     needs: cd
