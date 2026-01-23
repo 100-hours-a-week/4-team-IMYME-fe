@@ -144,7 +144,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       # 0️⃣ Runner IP 획득 및 보안 그룹 추가
       - name: Get Runner IP
         id: ip
@@ -243,7 +242,6 @@ jobs:
 
           EOF
 
-
       # 5️. 보안 그룹에서 IP 제거 (항상 실행)
       - name: Remove IP from Security Group
         if: always()
@@ -257,7 +255,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ap-northeast-2
-      
 
   cd-notify-success:
     needs: cd
