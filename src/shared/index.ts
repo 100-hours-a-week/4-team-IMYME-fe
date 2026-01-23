@@ -1,3 +1,6 @@
 export { HelperText } from './ui/HelperText'
 export { kakaoAuthClient } from './api/kakaoAuthClient'
+export { httpClient } from './api/httpClient'
 export { default as DefaultAvatar } from './assets/images/default-avatar.svg'
+export { RecentCard } from './ui/RecentCard'
+export { RecentListHeader } from './ui/RecentListHeader'

@@ -2,6 +2,7 @@
 
 :root {
   --color-primary: 64 141 254;
+  --color-secondary: 214 231 255;
   --color-primary-foreground: 255 255 255;
   --color-background: 250 252 255;
   --color-foreground: 15 23 42;
@@ -78,7 +79,7 @@
     border-color: rgb(var(--color-primary));
     border-width: 1px;
     color: rgb(var(--color-primary));
-    min-width: 320px;
+    min-width: 350px;
     min-height: 120px;
     justify-content: space-evenly;
     margin-top: 10%;
@@ -89,7 +90,29 @@
     border-color: rgb(var(--color-primary));
   }
 
+  .border-secondary {
+    border-color: rgb(var(--color-secondary));
+  }
+
   .bg-primary {
     background-color: rgb(var(--color-primary));
+  }
+
+  .bg-secondary {
+    background-color: rgb(var(--color-secondary));
+  }
+
+  .text-primary {
+    color: rgb(var(--color-primary));
+  }
+
+  .filtering-tab-frame {
+    background-color: rgb(var(--color-background));
+    margin: 0 auto;
+    min-height: 50vh;
+    max-height: 60vh;
+    width: 100%;
+    max-width: var(--frame-max-width);
+    min-width: var(--frame-min-width);
   }
 }

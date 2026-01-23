@@ -15,7 +15,7 @@ export function Avatar({ avatar_src, size }: AvatarProps) {
       width={size}
       height={size}
       className="rounded-full object-cover"
-      priority
+      loading="eager"
     />
   )
 }

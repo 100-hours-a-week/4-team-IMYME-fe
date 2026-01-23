@@ -15,18 +15,13 @@ export async function GET(req: NextRequest) {
     if (errorDescription) redirectUrl.searchParams.set('error_description', errorDescription)
 
     const res = NextResponse.redirect(redirectUrl)
-
     res.cookies.set('kakao_oauth_state', '', { maxAge: 0, path: '/' })
-
     return res
   }
 
   if (!code) {
-    const redirectUrl = new URL('/login', req.url)
-    const res = NextResponse.redirect(redirectUrl)
-
+    const res = NextResponse.redirect(new URL('/login', req.url))
     res.cookies.set('kakao_oauth_state', '', { maxAge: 0, path: '/' })
-
     return res
   }
 
@@ -35,14 +30,14 @@ export async function GET(req: NextRequest) {
     redirectUrl.searchParams.set('error', 'invalid_state')
 
     const res = NextResponse.redirect(redirectUrl)
-
     res.cookies.set('kakao_oauth_state', '', { maxAge: 0, path: '/' })
-
     return res
   }
 
-  console.log('kakao code: ', code)
-  // 다음 단계: 서버에서 code를 access/refresh token으로 교환
+  const redirectUrl = new URL('/auth/kakao/callback/complete', req.url)
+  redirectUrl.searchParams.set('code', code)
 
-  return NextResponse.redirect(new URL('/main', req.url))
+  const res = NextResponse.redirect(redirectUrl)
+  res.cookies.set('kakao_oauth_state', '', { maxAge: 0, path: '/' })
+  return res
 }

@@ -19,6 +19,8 @@ const buttonVariants = cva(
         login: 'btn-login',
         modal_btn_primary: 'modal-btn-primary',
         mode_btn_primary: 'mode-btn-primary',
+        see_more: 'bg-background max-w-8 max-h-4 text-sm text-black/50 ml-auto mr-10',
+        filter_btn: 'w-full bg-secondary text-primary  border-primary',
       },
       size: {
         default: 'h-9 px-4 py-2',
