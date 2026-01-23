@@ -44,5 +44,8 @@ export async function GET(req: NextRequest) {
   console.log('kakao code: ', code)
   // 다음 단계: 서버에서 code를 access/refresh token으로 교환
 
-  return NextResponse.redirect(new URL('/main', req.url))
+  const redirectUrl = new URL('/auth/callback/kakao/complete', req.url)
+  redirectUrl.searchParams.set('code', code)
+
+  return NextResponse.redirect(redirectUrl)
 }
