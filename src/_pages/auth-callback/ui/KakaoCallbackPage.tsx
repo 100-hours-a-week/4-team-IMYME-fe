@@ -10,7 +10,6 @@ const KAKAO_CODE_QUERY_KEY = 'code'
 const DEFAULT_REDIRECT_PATH = '/main'
 const REFRESH_TOKEN_CLEAR_ENDPOINT = '/api/auth/token/refresh/clear'
 
-// const createDeviceUuid = () => (typeof crypto?.randomUUID === 'function' ? crypto.randomUUID() : '')
 export const createUuidForRegex = (): string => {
   // 가장 간단하고 표준(UUID v4)
   if (typeof crypto?.randomUUID === 'function') {
