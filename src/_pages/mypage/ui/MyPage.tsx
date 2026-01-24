@@ -23,8 +23,6 @@ const categoryData = [
   { id: 9, categoryName: 'Web' },
 ]
 
-const CATEGORY_LIST_MAX_HEIGHT_PX = 240
-
 export function MyPage() {
   return (
     <div className="w-full">
@@ -46,10 +44,10 @@ export function MyPage() {
               <DrawerTitle>카테고리 선택</DrawerTitle>
             </DrawerHeader>
             <div className="bg-secondary mt-0 mb-0 h-0.5 w-full"></div>
-            <div className="flex h-full pb-0">
+            <div className="flex h-full flex-1 pb-0">
               <div
-                className="overflow-y-auto"
-                style={{ maxHeight: CATEGORY_LIST_MAX_HEIGHT_PX }}
+                className="h-full overflow-y-scroll"
+                // style={{ maxHeight: CATEGORY_LIST_MAX_HEIGHT_PX }}
               >
                 {categoryData.map((category) => {
                   return (
@@ -64,7 +62,7 @@ export function MyPage() {
               </div>
               <div className="bg-secondary mx-3 min-h-full w-0.5"></div>
             </div>
-            <DrawerFooter className="flex items-center pt-0">
+            <DrawerFooter className="mt-0 flex items-center">
               <Button variant={'filter_btn'}>선택 완료</Button>
             </DrawerFooter>
           </DrawerContent>
