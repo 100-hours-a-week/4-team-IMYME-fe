@@ -53,21 +53,75 @@ jobs:
 
       # 6. 정적 분석
       - name: Run ESLint
-        run: pnpm lint
+        id: lint
+        continue-on-error: true
+        run: pnpm lint 2>&1 | tee lint-output.txt
+
       - name: Run Prettier
-        run: pnpm prettier --check .
+        id: prettier
+        continue-on-error: true
+        run: pnpm prettier --check . 2>&1 | tee prettier-output.txt
 
       # 7. 타입 체크
       - name: Type Check
-        run: pnpm tsc --noEmit
+        id: typecheck
+        continue-on-error: true
+        run: pnpm tsc --noEmit 2>&1 | tee typecheck-output.txt
 
       # 8. 빌드
       - name: Build
+        id: build
+        continue-on-error: true
         env:
           NEXT_PUBLIC_KAKAO_REST_API_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_REST_API_KEY }}
           NEXT_PUBLIC_KAKAO_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_KAKAO_REDIRECT_URI }}
+        run: pnpm next build 2>&1 | tee build-output.txt
 
-        run: pnpm next build
+      # 8-1. 실패 체크 및 에러 메시지 수집
+      - name: Check for failures and collect errors
+        id: check_failures
+        if: always()
+        run: |
+          ERRORS=""
+          if [ "${{ steps.lint.outcome }}" == "failure" ]; then
+            ERRORS="${ERRORS}🔴 **ESLint 실패**\n\`\`\`\n$(tail -30 lint-output.txt)\n\`\`\`\n\n"
+          fi
+          if [ "${{ steps.prettier.outcome }}" == "failure" ]; then
+            ERRORS="${ERRORS}🔴 **Prettier 실패**\n\`\`\`\n$(tail -30 prettier-output.txt)\n\`\`\`\n\n"
+          fi
+          if [ "${{ steps.typecheck.outcome }}" == "failure" ]; then
+            ERRORS="${ERRORS}🔴 **TypeCheck 실패**\n\`\`\`\n$(tail -30 typecheck-output.txt)\n\`\`\`\n\n"
+          fi
+          if [ "${{ steps.build.outcome }}" == "failure" ]; then
+            ERRORS="${ERRORS}🔴 **Build 실패**\n\`\`\`\n$(tail -30 build-output.txt)\n\`\`\`\n\n"
+          fi
+
+          if [ -n "$ERRORS" ]; then
+            echo "has_errors=true" >> $GITHUB_OUTPUT
+            # GitHub Actions에서 멀티라인 출력 처리
+            echo "error_message<<EOF" >> $GITHUB_OUTPUT
+            echo -e "$ERRORS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "has_errors=false" >> $GITHUB_OUTPUT
+          fi
+
+      # 8-2. CI 실패 시 Discord 알림 (에러 메시지 포함)
+      - name: Discord CI failure with details
+        if: steps.check_failures.outputs.has_errors == 'true'
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: failure
+          title: '🔴 Frontend CI Failed'
+          description: ${{ steps.check_failures.outputs.error_message }}
+          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 CI 실패!'
+          color: 0xff0000
+
+      # 8-3. 에러가 있으면 워크플로우 실패 처리
+      - name: Fail if errors
+        if: steps.check_failures.outputs.has_errors == 'true'
+        run: exit 1
 
       # 9. 이전 아티팩트 삭제
       - name: Delete old artifacts
@@ -123,19 +177,6 @@ jobs:
           content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 CI 성공!'
           color: 0x00ff00
 
-  ci-notify-failure:
-    needs: ci
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Discord CI failure
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: failure
-          title: '🔴 Frontend CI Failed'
-          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 CI 실패!'
-          color: 0xff0000
 
   # 2) CD
   cd:
