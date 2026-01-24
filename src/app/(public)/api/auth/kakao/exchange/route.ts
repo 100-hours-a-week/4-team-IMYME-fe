@@ -14,10 +14,6 @@ export async function POST(req: NextRequest) {
 
   const redirectUri = process.env.NEXT_KAKAO_REDIRECT_URI ?? ''
 
-  console.log(`code: ${code}`)
-  console.log(`deviceUuid: ${deviceUuid}`)
-  console.log(`redirectUri: ${redirectUri}`)
-
   // ✅ 백엔드에 교환 요청
   try {
     const response = await httpClient.post(
@@ -35,6 +31,10 @@ export async function POST(req: NextRequest) {
     console.log('[exchange] backend raw response:', response)
     const access_token = response.data?.data?.access_token
     const refresh_token = response.data?.data?.refresh_token
+    const user = response.data?.data?.user
+
+    console.log(`user nickname: ${user.nickname}`)
+    console.log(`user profile image: ${user.profile_image_url}`)
 
     if (!access_token) {
       return NextResponse.json({ message: 'invalid_response' }, { status: 502 })
