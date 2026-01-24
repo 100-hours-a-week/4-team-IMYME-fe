@@ -51,15 +51,48 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # 6. 정적 분석
+      # 6. 정적 분석 (에러 로그 캡처)
       - name: Run ESLint
-        run: pnpm lint
+        id: lint
+        continue-on-error: true
+        run: |
+          mkdir -p error-logs
+          pnpm lint 2>&1 | tee error-logs/lint.log
+          exit ${PIPESTATUS[0]}
+
       - name: Run Prettier
-        run: pnpm prettier --check .
+        id: prettier
+        continue-on-error: true
+        run: |
+          pnpm prettier --check . 2>&1 | tee error-logs/prettier.log
+          exit ${PIPESTATUS[0]}
 
       # 7. 타입 체크
       - name: Type Check
-        run: pnpm tsc --noEmit
+        id: typecheck
+        continue-on-error: true
+        run: |
+          pnpm tsc --noEmit 2>&1 | tee error-logs/typecheck.log
+          exit ${PIPESTATUS[0]}
+
+      # 에러 로그 업로드 (검사 실패 시)
+      - name: Upload error logs
+        if: steps.lint.outcome == 'failure' || steps.prettier.outcome == 'failure' || steps.typecheck.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-logs
+          path: error-logs/
+          retention-days: 1
+
+      # 검사 실패 시 CI 실패 처리
+      - name: Check for failures
+        if: steps.lint.outcome == 'failure' || steps.prettier.outcome == 'failure' || steps.typecheck.outcome == 'failure'
+        run: |
+          echo "❌ CI checks failed:"
+          [ "${{ steps.lint.outcome }}" == "failure" ] && echo "  - ESLint failed"
+          [ "${{ steps.prettier.outcome }}" == "failure" ] && echo "  - Prettier failed"
+          [ "${{ steps.typecheck.outcome }}" == "failure" ] && echo "  - TypeScript failed"
+          exit 1
 
       # 8. 빌드
       - name: Build
@@ -128,6 +161,48 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest
     steps:
+      - name: Download error logs
+        uses: actions/download-artifact@v4
+        with:
+          name: error-logs
+          path: error-logs/
+        continue-on-error: true
+
+      - name: Prepare error message
+        id: error_msg
+        run: |
+          ERROR_MSG=""
+
+          if [ -f error-logs/lint.log ]; then
+            LINT_ERRORS=$(grep -E "warning|error" error-logs/lint.log | head -20 || true)
+            if [ -n "$LINT_ERRORS" ]; then
+              ERROR_MSG="${ERROR_MSG}📋 **ESLint:**\n\`\`\`\n${LINT_ERRORS}\n\`\`\`\n"
+            fi
+          fi
+
+          if [ -f error-logs/prettier.log ]; then
+            PRETTIER_ERRORS=$(grep -E "^\[warn\]|Code style issues" error-logs/prettier.log | head -20 || true)
+            if [ -n "$PRETTIER_ERRORS" ]; then
+              ERROR_MSG="${ERROR_MSG}🎨 **Prettier:**\n\`\`\`\n${PRETTIER_ERRORS}\n\`\`\`\n"
+            fi
+          fi
+
+          if [ -f error-logs/typecheck.log ]; then
+            TSC_ERRORS=$(grep -E "error TS|\.tsx?\(" error-logs/typecheck.log | head -20 || true)
+            if [ -n "$TSC_ERRORS" ]; then
+              ERROR_MSG="${ERROR_MSG}📝 **TypeScript:**\n\`\`\`\n${TSC_ERRORS}\n\`\`\`\n"
+            fi
+          fi
+
+          if [ -z "$ERROR_MSG" ]; then
+            ERROR_MSG="빌드 또는 기타 단계에서 오류가 발생했습니다. GitHub Actions 로그를 확인하세요."
+          fi
+
+          # GitHub Actions output에 저장 (멀티라인)
+          echo "msg<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$ERROR_MSG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Discord CI failure
         uses: sarisia/actions-status-discord@v1
         with:
@@ -135,6 +210,7 @@ jobs:
           status: failure
           title: '🔴 Frontend CI Failed'
           content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 CI 실패!'
+          description: ${{ steps.error_msg.outputs.msg }}
           color: 0xff0000
 
   # 2) CD
