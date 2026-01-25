@@ -1,5 +1,3 @@
-import { useNickname } from '../model/useUserStore'
-
 interface NicknameProps {
   nickname: string
 }
