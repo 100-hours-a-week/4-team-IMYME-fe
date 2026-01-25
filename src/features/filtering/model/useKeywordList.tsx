@@ -7,7 +7,7 @@ import { getKeywords } from './getKeywords'
 import type { KeywordItemType } from '@/entities/keyword'
 
 type UseKeywordListOptions = {
-  categoryId: number
+  categoryId: number | null
   accessToken: string
 }
 

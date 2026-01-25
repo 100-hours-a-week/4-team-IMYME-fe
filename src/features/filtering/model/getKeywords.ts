@@ -15,7 +15,7 @@ interface KeywordApiResponse {
 
 export async function getKeywords(
   accessToken: string,
-  categoryId: number,
+  categoryId: number | null,
 ): Promise<KeywordItemType[]> {
   try {
     const response = await httpClient.get<KeywordApiResponse>(
