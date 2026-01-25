@@ -16,9 +16,20 @@ import {
 
 export function FilteringTab() {
   const accessToken = useAccessToken()
-  const categoryData = useCategoryList(accessToken)
+  const {
+    data: categoryData = [],
+    isLoading: categoryLoading,
+    error: categoryError,
+  } = useCategoryList(accessToken)
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
-  const keywordData = useKeywordList({ accessToken, categoryId: selectedCategoryId })
+  const {
+    data: keywordData = [],
+    isLoading: keywordLoading,
+    error: keywordError,
+  } = useKeywordList({
+    accessToken,
+    categoryId: selectedCategoryId,
+  })
 
   const handleCategoryClick = (categoryId: number) => {
     setSelectedCategoryId(categoryId)
@@ -36,6 +47,8 @@ export function FilteringTab() {
       <div className="bg-secondary mt-0 mb-0 h-0.5 w-full"></div>
       <div className="flex h-full flex-1 pb-0">
         <CategoryList
+          isLoading={categoryLoading}
+          error={categoryError}
           categories={categoryData}
           onCategoryClick={handleCategoryClick}
         />
@@ -43,10 +56,14 @@ export function FilteringTab() {
         <div className="h-full overflow-y-scroll">
           {keywordData.length > 0 ? (
             <KeywordList
+              isLoading={keywordLoading}
+              error={keywordError}
               keywords={keywordData}
               onKeywordClick={handleKeywordClick}
             />
-          ) : null}
+          ) : (
+            <p className="text-center">카테고리를 선택해 주세요.</p>
+          )}
         </div>
       </div>
       <DrawerFooter className="mt-0 flex items-center">

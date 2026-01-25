@@ -1,44 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 import { getKeywords } from './getKeywords'
 
 import type { KeywordItemType } from '@/entities/keyword'
 
 type UseKeywordListOptions = {
-  categoryId: number | null
+  categoryId: number
   accessToken: string
 }
 
 export function useKeywordList({ categoryId, accessToken }: UseKeywordListOptions) {
-  const [keywords, setKeywords] = useState<KeywordItemType[]>([])
-
-  useEffect(() => {
-    let cancelled = false
-
-    const run = async () => {
-      if (!accessToken || categoryId === null) {
-        setKeywords([])
-        return
-      }
-
-      try {
-        const data = await getKeywords(accessToken, categoryId)
-        console.log(data)
-        if (!cancelled) setKeywords(data)
-      } catch (error) {
-        if (!cancelled) setKeywords([])
-        console.error('Failed to load keywords', error)
-      }
-    }
-
-    void run()
-
-    return () => {
-      cancelled = true
-    }
-  }, [accessToken, categoryId])
-
-  return keywords
+  return useQuery<KeywordItemType[]>({
+    queryKey: ['keywords', categoryId],
+    queryFn: () => getKeywords(accessToken, categoryId),
+    enabled: Boolean(accessToken) && categoryId !== null,
+  })
 }

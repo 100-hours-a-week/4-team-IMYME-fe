@@ -2,6 +2,8 @@ import { KeywordItemType } from '@/entities/keyword'
 import { KeywordItem } from '@/entities/keyword/ui/KeywordItem'
 
 type KeywordListProps = {
+  isLoading: boolean
+  error: Error | null
   keywords: KeywordItemType[]
   onKeywordClick: (keyword: KeywordItemType) => void
 }

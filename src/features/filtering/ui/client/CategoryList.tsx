@@ -3,6 +3,8 @@
 import { CategoryItem, CategoryItemType } from '@/entities/category'
 
 type CategoryListProps = {
+  isLoading: boolean
+  error: Error | null
   categories: CategoryItemType[]
   onCategoryClick: (categoryId: number) => void
 }
