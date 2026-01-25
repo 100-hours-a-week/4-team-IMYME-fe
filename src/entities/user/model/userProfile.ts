@@ -5,5 +5,4 @@ export type UserProfile = {
   activeCardCount: number
   consecutiveDays: number
   winCount: number
-  isNewUser: boolean
 }
