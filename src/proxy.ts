@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PROTECTED_PATHS = ['/main', '/mypage', '/levelup']
+const PROTECTED_PATHS = ['/main', '/mypage', '/levelup', '/']
 const LOGIN_PATH = '/login'
 const REFRESH_TOKEN_COOKIE = 'refresh_token'
 
@@ -9,6 +9,14 @@ const isProtectedPath = (pathname: string) =>
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  if (pathname === '/') {
+    const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value
+    if (refreshToken) {
+      return NextResponse.redirect(new URL('/main', request.url))
+    }
+    return NextResponse.redirect(new URL(LOGIN_PATH, request.url))
+  }
 
   if (!isProtectedPath(pathname)) {
     return NextResponse.next()
@@ -24,5 +32,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/main/:path*', '/mypage/:path*', '/levelup/:path*'],
+  matcher: ['/', '/main/:path*', '/mypage/:path*', '/levelup/:path*'],
 }
