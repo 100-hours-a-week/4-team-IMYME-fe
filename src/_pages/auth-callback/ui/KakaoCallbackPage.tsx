@@ -1,20 +1,24 @@
 'use client'
 
-import axios from 'axios'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { NextResponse } from 'next/server'
 import { useEffect } from 'react'
 
 import { useSetProfile } from '@/entities/user/model/useUserStore'
-import { useAccessToken, useSetAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { httpClient } from '@/shared'
+import { useSetAccessToken } from '@/features/auth/model/client/useAuthStore'
 
 import type { UserProfile } from '@/entities/user'
 
 const DEVICE_UUID_STORAGE_KEY = 'device_uuid'
 const KAKAO_CODE_QUERY_KEY = 'code'
 const DEFAULT_REDIRECT_PATH = '/main'
-const REFRESH_TOKEN_CLEAR_ENDPOINT = '/api/auth/token/refresh/clear'
+const REFRESH_TOKEN_CLEAR_PATH = '/api/auth/token/refresh/clear'
+const KAKAO_EXCHANGE_PATH = '/api/auth/kakao/exchange'
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL ?? ''
+
+const buildServerUrl = (path: string) => {
+  const normalizedBase = SERVER_URL.replace(/\/$/, '')
+  return `${normalizedBase}${path}`
+}
 
 export const createUuidForRegex = (): string => {
   // 가장 간단하고 표준(UUID v4)
@@ -53,7 +57,7 @@ export function KakaoCallbackPage() {
 
       if (!code) {
         try {
-          await fetch(REFRESH_TOKEN_CLEAR_ENDPOINT, { method: 'POST' })
+          await fetch(buildServerUrl(REFRESH_TOKEN_CLEAR_PATH), { method: 'POST' })
         } catch {}
         router.replace('/login')
         return
@@ -71,7 +75,7 @@ export function KakaoCallbackPage() {
       }
 
       // ✅ 2) 동일 출처 API로 교환 (URL에 토큰 싣지 않음)
-      const res = await fetch('/api/auth/kakao/exchange', {
+      const res = await fetch(buildServerUrl(KAKAO_EXCHANGE_PATH), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, deviceUuid }),
