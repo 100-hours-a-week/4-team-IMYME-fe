@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     return res
   }
 
-  const redirectUrl = new URL('/auth/kakao/callback/complete', req.url)
+  const redirectUrl = new URL('/auth/callback/kakao/complete', req.url)
   redirectUrl.searchParams.set('code', code)
 
   const res = NextResponse.redirect(redirectUrl)
