@@ -8,8 +8,11 @@ import type { CategoryItemType } from '@/entities/category'
 
 export function useCategoryList(accessToken: string) {
   return useQuery<CategoryItemType[]>({
-    queryKey: ['categories'],
+    queryKey: ['categories', accessToken],
     queryFn: () => getCategories(accessToken),
     enabled: Boolean(accessToken),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
   })
 }

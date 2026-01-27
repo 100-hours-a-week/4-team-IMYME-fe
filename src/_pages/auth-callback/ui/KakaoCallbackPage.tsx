@@ -1,10 +1,13 @@
 'use client'
 
+import axios from 'axios'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { NextResponse } from 'next/server'
 import { useEffect } from 'react'
 
 import { useSetProfile } from '@/entities/user/model/useUserStore'
 import { useSetAccessToken } from '@/features/auth/model/client/useAuthStore'
+import { httpClient } from '@/shared'
 
 import type { UserProfile } from '@/entities/user'
 
@@ -94,37 +97,37 @@ export function KakaoCallbackPage() {
 
       // ✅ 3) access token → zustand
       setAccessToken(data.accessToken)
-      setProfile(data.user)
-      router.replace(DEFAULT_REDIRECT_PATH)
-      // try {
-      //   const profileResponse = await httpClient.get('/users/me', {
-      //     headers: {
-      //       Authorization: `Bearer ${data.accessToken}`,
-      //       'Cache-Control': 'no-store',
-      //       'Content-Type': 'application/json',
-      //     },
-      //   })
-      //   const profile = profileResponse.data?.data
+      // setProfile(data.user)
+      // router.replace(DEFAULT_REDIRECT_PATH)
+      try {
+        const profileResponse = await httpClient.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${data.accessToken}`,
+            'Cache-Control': 'no-store',
+            'Content-Type': 'application/json',
+          },
+        })
+        const profile = profileResponse.data?.data
 
-      //   if (!profile) {
-      //     router.replace('/login')
-      //     return
-      //   }
+        if (!profile) {
+          router.replace('/login')
+          return
+        }
 
-      //   setProfile(profile)
-      //   router.replace(DEFAULT_REDIRECT_PATH)
-      // } catch (err: unknown) {
-      //   if (axios.isAxiosError(err)) {
-      //     const status = err.response?.status ?? 500
-      //     const data = err.response?.data
-      //     console.error('[kakao exchange] axios error', status, data)
+        setProfile(profile)
+        router.replace(DEFAULT_REDIRECT_PATH)
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+          const status = err.response?.status ?? 500
+          const data = err.response?.data
+          console.error('[kakao exchange] axios error', status, data)
 
-      //     return NextResponse.json(
-      //       { message: 'backend_exchange_failed', status, data },
-      //       { status }, // ✅ 실제 status 그대로 전달
-      //     )
-      //   }
-      // }
+          return NextResponse.json(
+            { message: 'backend_exchange_failed', status, data },
+            { status }, // ✅ 실제 status 그대로 전달
+          )
+        }
+      }
     }
 
     void run()
