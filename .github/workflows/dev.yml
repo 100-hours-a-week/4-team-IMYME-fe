@@ -103,7 +103,14 @@ jobs:
           NODE_ENV: ${{ secrets.NODE_ENV }}
           NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
 
-        run: pnpm next build
+        run: |
+          echo "=== Build env check (masked) ==="
+          echo "NODE_ENV=$NODE_ENV"
+          echo "NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}"
+          echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}"
+          echo "NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI}"
+
+          pnpm next build
 
       # 9. 이전 아티팩트 삭제
       - name: Delete old artifacts
@@ -298,6 +305,19 @@ jobs:
 
           # 5. PM2로 프론트 서버 재시작
           cd "$CURRENT_LINK"
+
+          # shared env 로드 (없으면 실패하게)
+          ENV_FILE="$SHARED_DIR/.env"
+          if [ ! -f "$ENV_FILE" ]; then
+            echo "❌ env file not found: $ENV_FILE"
+            exit 1
+          fi
+
+          # env를 export 상태로 로드
+          set -a
+          source "$ENV_FILE"
+          set +a
+
           pm2 delete frontend || true
           pm2 start npx --name frontend -- next start -p 3000
 
