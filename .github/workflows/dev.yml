@@ -328,8 +328,8 @@ jobs:
 
           BASE_URL="${{ secrets.DEV_BASE_URL }}"
 
-          echo "🔎 Smoke 1) Health check: ${BASE_URL}/api/server"
-          curl -fsS "${BASE_URL}/api/server" >/dev/null
+          echo "🔎 Smoke 1) Health check: ${BASE_URL}/api/health"
+          curl -fsS "${BASE_URL}/api/health" >/dev/null
 
           echo "🔎 Smoke 2) Main page: ${BASE_URL}/"
           curl -fsS -o /tmp/home.html "${BASE_URL}/" >/dev/null
