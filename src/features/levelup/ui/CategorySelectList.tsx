@@ -1,13 +1,13 @@
 'use client'
 
-import { useCategoryList } from '../../model/useCategoryList'
+import { useCategoryList } from '../../filtering/model/useCategoryList'
 
 import type { CategoryItemType } from '@/entities/category'
 
 type CategorySelectListProps = {
   accessToken: string
   selectedCategoryId: number | null
-  onCategorySelectId: (categoryId: number) => void
+  onCategorySelectId: (category: CategoryItemType) => void
   onClearKeyword: () => void
 }
 
@@ -47,7 +47,7 @@ export function CategorySelectList({
             key={category.id}
             type="button"
             onClick={() => {
-              onCategorySelectId(category.id)
+              onCategorySelectId(category)
               onClearKeyword()
             }}
             className={`flex h-40 w-40 items-center justify-center overflow-auto rounded-2xl bg-white ${selectedClassName}`}

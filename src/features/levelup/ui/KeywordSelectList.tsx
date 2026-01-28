@@ -1,6 +1,6 @@
 'use client'
 
-import { useKeywordList } from '../../model/useKeywordList'
+import { useKeywordList } from '../../filtering/model/useKeywordList'
 
 import type { KeywordItemType } from '@/entities/keyword'
 

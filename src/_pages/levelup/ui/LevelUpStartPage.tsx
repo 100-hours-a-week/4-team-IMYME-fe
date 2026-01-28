@@ -2,11 +2,10 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+import { CategoryItemType } from '@/entities/category'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { CategorySelectList, KeywordSelectList } from '@/features/filtering'
-
-import { BackButton } from './BackButton'
-import { ProgressField } from './ProgressField'
+import { CategorySelectList, KeywordSelectList } from '@/features/levelup'
+import { LevelUpHeader } from '@/features/levelup'
 
 import type { KeywordItemType } from '@/entities/keyword'
 
@@ -18,51 +17,52 @@ const STEP_TWO_LABEL = '2/3'
 export function LevelUpStartPage() {
   const router = useRouter()
   const accessToken = useAccessToken()
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<CategoryItemType | null>(null)
   const [selectedKeyword, setSelectedKeyword] = useState<KeywordItemType | null>(null)
 
-  const hasSelectedCategory = selectedCategoryId !== null
+  const hasSelectedCategory = selectedCategory !== null
   const progressValue = hasSelectedCategory ? STEP_TWO_PROGRESS_VALUE : STEP_ONE_PROGRESS_VALUE
   const progressLabel = hasSelectedCategory ? STEP_TWO_LABEL : STEP_ONE_LABEL
 
+  const handleKeywordSelect = (keyword: KeywordItemType) => {
+    setSelectedKeyword(keyword)
+    router.push('/levelup/record')
+    setSelectedCategory(null)
+    setSelectedKeyword(null)
+  }
+
   const handleBack = () => {
-    if (!selectedCategoryId) {
+    if (!selectedCategory?.id || (selectedCategory && !selectedKeyword)) {
+      setSelectedCategory(null)
       router.back()
       return
     }
 
-    setSelectedCategoryId(null)
+    setSelectedCategory(null)
     setSelectedKeyword(null)
   }
 
   return (
     <div className="h-full w-full">
-      <div className="flex gap-3">
-        <BackButton onClick={handleBack} />
-        <div className="flex flex-col items-start">
-          <p className="font-semibold">레벨업 모드</p>
-          <p className="text-sm">카테고리 선택</p>
-        </div>
-      </div>
-      <div className="px-6">
-        <ProgressField
-          value={progressValue}
-          stepLabel={progressLabel}
-        />
-      </div>
+      <LevelUpHeader
+        variant={hasSelectedCategory ? 'keyword' : 'category'}
+        onBack={handleBack}
+        progressValue={progressValue}
+        stepLabel={progressLabel}
+      />
       <div className="bg-secondary mx-4 mt-4 flex max-h-[80vh] max-w-350 flex-col items-center justify-center overflow-hidden rounded-2xl p-4">
         {hasSelectedCategory ? (
           <KeywordSelectList
             accessToken={accessToken}
-            categoryId={selectedCategoryId}
+            categoryId={selectedCategory ? selectedCategory.id : null}
             selectedKeywordId={selectedKeyword ? selectedKeyword.id : null}
-            onKeywordSelect={setSelectedKeyword}
+            onKeywordSelect={handleKeywordSelect}
           />
         ) : (
           <CategorySelectList
             accessToken={accessToken}
-            selectedCategoryId={selectedCategoryId}
-            onCategorySelectId={setSelectedCategoryId}
+            selectedCategoryId={selectedCategory ? selectedCategory : null}
+            onCategorySelectId={setSelectedCategory}
             onClearKeyword={() => setSelectedKeyword(null)}
           />
         )}
