@@ -1,10 +1,10 @@
 'use client'
 
+import { Mic } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { LevelUpHeader } from '@/features/levelup'
 import { SubjectCard } from '@/shared'
-import { Mic } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 
 const RECORD_PROGRESS_VALUE = 100
