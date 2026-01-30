@@ -26,19 +26,17 @@ export function Header({ showMenu = true }: HeaderProps) {
       {showMenu ? (
         <>
           <MenuModal
-            trigger={
-              <button>
-                <Menu className="h-5 w-5" />
-              </button>
-            }
+            trigger={<Menu className="h-5 w-5" />}
             open={menuOpen}
             onOpenChange={handleMenuOpenChange}
             onClickProfileEdit={handleProfileEditRequest}
           />
-          <ProfileEditModal
-            open={profileEditOpen}
-            onOpenChange={handleProfileEditOpenChange}
-          />
+          {profileEditOpen ? (
+            <ProfileEditModal
+              open={profileEditOpen}
+              onOpenChange={handleProfileEditOpenChange}
+            />
+          ) : null}
         </>
       ) : (
         <span aria-hidden="true" />
