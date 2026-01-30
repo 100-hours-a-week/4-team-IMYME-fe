@@ -12,13 +12,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'missing_params' }, { status: 400 })
   }
 
-  console.log(`code: ${code}`)
-  console.log(`deviceUuid: ${deviceUuid}`)
-
   const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI ?? ''
 
-  console.log(redirectUri)
-  // ✅ 백엔드에 교환 요청
   try {
     const response = await httpClient.post(
       '/auth/oauth/kakao',
@@ -32,8 +27,6 @@ export async function POST(req: NextRequest) {
       },
     )
 
-    console.log('[exchange] backend raw response:', response)
-    console.log('[exchange] backend raw response user:', response.data.data.user)
     const accessToken = response.data?.data?.accessToken
     const refreshToken = response.data?.data?.refreshToken
     const user = response.data?.data?.user

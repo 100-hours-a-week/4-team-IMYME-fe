@@ -21,7 +21,6 @@ export async function getCategories(accessToken: string): Promise<CategoryItemTy
       },
     })
 
-    console.log(response.data)
     const items = response.data?.data ?? []
 
     return items.map((item) => ({

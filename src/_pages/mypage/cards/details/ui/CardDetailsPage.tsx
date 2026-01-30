@@ -20,7 +20,6 @@ export function CardDetailsPage() {
 
   const remainingAttempts = data ? Math.max(0, 5 - data.attemptCount) : 0
 
-  console.log(feedbackData)
   return (
     <div className="flex h-full w-full flex-1 flex-col">
       <LevelUpHeader

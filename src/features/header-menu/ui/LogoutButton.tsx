@@ -25,7 +25,7 @@ export function LogoutButton() {
           },
         },
       )
-      console.log(response)
+
       if (response.status === 204) {
         try {
           await fetch('/api/auth/token/refresh/clear', { method: 'POST' })

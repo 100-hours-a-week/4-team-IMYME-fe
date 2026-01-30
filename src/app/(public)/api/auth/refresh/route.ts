@@ -6,7 +6,7 @@ import { httpClient } from '@/shared'
 
 export async function POST() {
   const refreshToken = (await cookies()).get('refresh_token')?.value
-  console.log(`refresh token: ${refreshToken}`)
+
   if (!refreshToken) {
     return NextResponse.json({ message: 'no_refresh_token' }, { status: 401 })
   }
@@ -18,8 +18,6 @@ export async function POST() {
       { headers: { 'Content-Type': 'application/json' } },
     )
 
-    console.log('backend raw response /refresh:', response.data)
-    // 백엔드가 { success, data: { access_token } } 구조라면
     const accessToken = response.data?.data?.accessToken
     const nextRefreshToken = response.data?.data?.refreshToken
 

@@ -97,15 +97,14 @@ export function KakaoCallbackPage() {
 
       // ✅ 3) access token → zustand
       setAccessToken(data.accessToken)
-      // setProfile(data.user)
-      // router.replace(DEFAULT_REDIRECT_PATH)
+
       try {
         const profileResponse = await httpClient.get('/users/me', {
           headers: {
             Authorization: `Bearer ${data.accessToken}`,
           },
         })
-        console.log(profileResponse)
+
         const profile = profileResponse.data?.data
 
         if (!profile) {

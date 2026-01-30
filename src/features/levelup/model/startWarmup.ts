@@ -18,7 +18,6 @@ export async function startWarmup(accessToken: string, payload: StartWarmupPaylo
       },
     })
 
-    console.log(response)
     return response.data
   } catch (error) {
     console.error('Failed to start warmup', error)
