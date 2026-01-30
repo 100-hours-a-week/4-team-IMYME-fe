@@ -81,7 +81,10 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
           helperVariant={nicknameError ? 'error' : 'default'}
         />
         <DialogFooter>
-          <ProfileEditTryButton onClick={handleProfileEdit} />
+          <ProfileEditTryButton
+            onClick={handleProfileEdit}
+            disabled={nicknameError || profileImageError}
+          />
         </DialogFooter>
       </DialogContent>
     </Dialog>
