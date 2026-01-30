@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 
-import { Card } from '@/entities/card'
+import { Card, deleteCard } from '@/entities/card'
 import { useUserId } from '@/entities/user/model/useUserStore'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { useMyCardList } from '@/features/my-card/model/useMyCardList'
@@ -23,7 +23,7 @@ export function MyCardList({ selectedCategory, selectedKeyword }: MyCardListProp
   const router = useRouter()
   const accessToken = useAccessToken()
   const userId = useUserId()
-  const { data, isLoading, error } = useMyCardList(accessToken, userId)
+  const { data, isLoading, error, refetch } = useMyCardList(accessToken, userId)
 
   if (isLoading) {
     return <p className={COMMENT_CLASSNAME}>카드를 불러오는 중입니다.</p>
@@ -60,6 +60,12 @@ export function MyCardList({ selectedCategory, selectedKeyword }: MyCardListProp
           categoryName={card.categoryName}
           keywordName={card.keywordName}
           onClick={() => router.push(`/mypage/cards/${card.id}`)}
+          onDelete={async () => {
+            const deleted = await deleteCard(accessToken, card.id)
+            if (deleted) {
+              await refetch()
+            }
+          }}
         />
       ))}
     </div>

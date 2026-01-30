@@ -16,34 +16,41 @@ type UseFeedbackDataResult = {
 export function useFeedbackData(cardDetails: CardDetails | null): UseFeedbackDataResult {
   const accessToken = useAccessToken()
 
-  const attemptParams = useMemo(
-    () =>
+  const attemptParams = useMemo(() => {
+    const attempts =
       cardDetails?.attempts
         ?.slice()
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .map((attempt) => ({
-          cardId: cardDetails.id,
-          attemptId: attempt.id,
-        })) ?? [],
-    [cardDetails],
-  )
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) ?? []
+
+    return attempts.map((attempt, index) => ({
+      cardId: cardDetails?.id ?? 0,
+      attemptId: attempt.id,
+      attemptIndex: index + 1,
+    }))
+  }, [cardDetails])
 
   const attemptQueries = useAttemptDetailsList(accessToken, attemptParams)
   const isLoading = attemptQueries.some((query) => query.isLoading)
 
   const feedbackData: FeedbackItem[] = attemptQueries
-    .map((query) => query.data)
-    .filter((attempt): attempt is NonNullable<typeof attempt> => Boolean(attempt))
-    .map((attempt) => ({
-      id: attempt.attemptId,
-      attemptNo: attempt.attemptNo,
-      summary: attempt.feedback.summary,
-      keywords: attempt.feedback.keywords,
-      facts: attempt.feedback.facts,
-      understanding: attempt.feedback.understanding,
-      socraticFeedback: attempt.feedback.socraticFeedback,
-      createdAt: attempt.feedback.createdAt,
+    .map((query, index) => ({
+      data: query.data,
+      attemptIndex: attemptParams[index]?.attemptIndex ?? 0,
     }))
+    .filter((item): item is { data: NonNullable<typeof item.data>; attemptIndex: number } =>
+      Boolean(item.data),
+    )
+    .map((item) => ({
+      id: item.data.attemptId,
+      attemptNo: item.attemptIndex,
+      summary: item.data.feedback.summary,
+      keywords: item.data.feedback.keywords,
+      facts: item.data.feedback.facts,
+      understanding: item.data.feedback.understanding,
+      socraticFeedback: item.data.feedback.socraticFeedback,
+      createdAt: item.data.feedback.createdAt,
+    }))
+    .sort((a, b) => b.attemptNo - a.attemptNo)
 
   return { feedbackData, isLoading }
 }

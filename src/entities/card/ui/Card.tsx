@@ -10,6 +10,7 @@ type CardProps = {
   categoryName: string
   keywordName: string
   onClick?: () => void
+  onDelete?: () => void
 }
 
 const REVEAL_PX = 50
@@ -25,7 +26,7 @@ const TAG_LIST_CLASSNAME = 'flex gap-2'
 const TAG_CLASSNAME =
   'bg-secondary text-primary flex h-5 min-w-15 items-center justify-center rounded-2xl px-2 text-xs'
 
-export function Card({ title, date, categoryName, keywordName, onClick }: CardProps) {
+export function Card({ title, date, categoryName, keywordName, onClick, onDelete }: CardProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
 
   const [x, setX] = useState(0) // 0 ~ -REVEAL_PX
@@ -118,7 +119,17 @@ export function Card({ title, date, categoryName, keywordName, onClick }: CardPr
         ].join(' ')}
         style={{ width: REVEAL_PX }}
       >
-        <Trash2 className="text-black" />
+        <button
+          type="button"
+          aria-label="카드 삭제"
+          className="flex h-8 w-8 items-center justify-center"
+          onClick={(event) => {
+            event.stopPropagation()
+            if (onDelete) onDelete()
+          }}
+        >
+          <Trash2 className="text-black" />
+        </button>
       </div>
 
       <div

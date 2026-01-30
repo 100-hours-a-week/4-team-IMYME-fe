@@ -22,7 +22,7 @@ type CardNameModalProps = {
   selectedCategoryName: string | null
   selectedKeywordName: string | null
   onCancel: () => void
-  onConfirm: () => void
+  onConfirm: (title: string) => void
 }
 
 const TITLE_TEXT = '카드 만들기'
@@ -85,7 +85,7 @@ export function CardNameModal({
         <DialogFooter className="flex w-full justify-center gap-5">
           <ConfirmButton
             disabled={isConfirmDisabled}
-            onClick={onConfirm}
+            onClick={() => onConfirm(cardName)}
           />
           <CancelButton onClick={onCancel} />
         </DialogFooter>

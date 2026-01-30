@@ -10,6 +10,7 @@ import {
   KeywordSelectList,
   LevelUpHeader,
 } from '@/features/levelup'
+import { createCard } from '@/features/levelup/model/createCard'
 
 import type { KeywordItemType } from '@/entities/keyword'
 const STEP_ONE_PROGRESS_VALUE = 33
@@ -33,9 +34,20 @@ export function LevelUpStartPage() {
     setIsNameDialogOpen(true)
   }
 
-  const handleConfirmCardName = () => {
+  const handleConfirmCardName = async (title: string) => {
+    if (!selectedCategory || !selectedKeyword) return
+
+    const response = await createCard(accessToken, {
+      categoryId: selectedCategory.id,
+      keywordId: selectedKeyword.id,
+      title,
+    })
+
+    const createdCardId = response?.data?.id
+    if (!createdCardId) return
+
     setIsNameDialogOpen(false)
-    router.push('/levelup/record')
+    router.push(`/levelup/record?cardId=${createdCardId}`)
   }
 
   const handleBack = () => {
