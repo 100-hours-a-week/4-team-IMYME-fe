@@ -43,7 +43,10 @@ export function AlertModal({
       onOpenChange={onOpenChange}
     >
       {trigger ? <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger> : null}
-      <AlertDialogContent size="sm">
+      <AlertDialogContent
+        size="sm"
+        className="flex flex-col items-center bg-white"
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description ? <AlertDialogDescription>{description}</AlertDialogDescription> : null}
@@ -51,7 +54,7 @@ export function AlertModal({
         <AlertDialogFooter>
           <AlertDialogAction
             onClick={onAction}
-            variant={undefined}
+            variant="confirm_btn_primary"
             size={undefined}
           >
             {action}
@@ -59,7 +62,7 @@ export function AlertModal({
           <AlertDialogCancel
             onClick={onCancel}
             size={undefined}
-            variant={undefined}
+            variant="cancel_btn_primary"
           >
             {cancel}
           </AlertDialogCancel>

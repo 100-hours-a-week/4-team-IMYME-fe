@@ -1,4 +1,5 @@
 import { Provider } from '@/features/provider'
+import { Toaster } from '@/shared/ui/sonner'
 
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="ko">
       <body className="app-shell">
         <div className="app-frame">
+          <Toaster />
           <Provider>{children}</Provider>
         </div>
       </body>

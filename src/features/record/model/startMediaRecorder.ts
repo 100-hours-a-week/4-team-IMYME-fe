@@ -1,33 +1,24 @@
 'use client'
 
 type StartMediaRecorderOptions = {
-  mimeType?: string // ✅ 녹음 포맷 지정(예: 'audio/webm', 'audio/mp4')
   audioBitsPerSecond?: number // ✅ 오디오 비트레이트(품질/용량에 영향). 미지정 시 브라우저 기본값
   timesliceMs?: number // ✅ 지정하면 N ms마다 ondataavailable 이벤트로 chunk가 주기적으로 떨어짐
   constraints?: MediaStreamConstraints // ✅ getUserMedia에 넘길 제약(기본은 {audio:true})
 }
 
 type StartMediaRecorderResult =
-  | { ok: true; recorder: MediaRecorder; stream: MediaStream } // ✅ 성공: recorder/stream 반환
-  | { ok: false; reason: string } // ✅ 실패: 실패 이유 문자열 반환
+  | { ok: true; recorder: MediaRecorder; stream: MediaStream }
+  | { ok: false; reason: string }
 
-const DEFAULT_CONSTRAINTS: MediaStreamConstraints = { audio: true } // ✅ 기본은 마이크 오디오만
-const ALLOWED_MIME_TYPES = ['audio/mp4', 'audio/webm'] // ✅ 허용할 mimeType 화이트리스트
-const DEFAULT_MIME_TYPE = 'audio/webm' // ✅ 선호 기본 포맷(대체로 브라우저 지원이 좋음)
+const DEFAULT_CONSTRAINTS: MediaStreamConstraints = { audio: true }
+const ALLOWED_MIME_TYPES = ['audio/mp4', 'audio/webm']
+const DEFAULT_MIME_TYPE = 'audio/webm'
 
 export async function startMediaRecorder(
   options: StartMediaRecorderOptions = {}, // ✅ 옵션 안 주면 빈 객체로 기본 처리
 ): Promise<StartMediaRecorderResult> {
-  // ✅ SSR(서버)에서는 window/navigator가 없으므로 즉시 실패 처리
-  // ✅ 브라우저여도 mediaDevices.getUserMedia가 없으면 녹음 불가(구형/제한 환경)
   if (typeof window === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
     return { ok: false, reason: 'media_devices_unavailable' }
-  }
-
-  // ✅ 호출자가 mimeType을 지정했다면, 허용 리스트에 있는 값인지 먼저 검증
-  // ✅ (실수로 'audio/wav' 같은 걸 넘겼을 때 조기 실패)
-  if (options.mimeType && !ALLOWED_MIME_TYPES.includes(options.mimeType)) {
-    return { ok: false, reason: 'unsupported_mime_type' } // ✅ 허용하지 않는 포맷
   }
 
   try {
@@ -37,8 +28,8 @@ export async function startMediaRecorder(
       options.constraints ?? DEFAULT_CONSTRAINTS,
     )
 
-    // ✅ 우선 사용자가 지정한 mimeType을 쓰고, 없으면 DEFAULT_MIME_TYPE('audio/webm')을 선호
-    const preferredMimeType = options.mimeType ?? DEFAULT_MIME_TYPE
+    // ✅ 우선 DEFAULT_MIME_TYPE('audio/webm')을 선호
+    const preferredMimeType = DEFAULT_MIME_TYPE
 
     // ✅ 브라우저가 preferredMimeType을 지원하면 그걸 사용
     // ✅ 지원하지 않으면 허용 리스트(ALLOWED_MIME_TYPES) 중 지원되는 첫 타입을 찾음
