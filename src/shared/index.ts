@@ -10,6 +10,7 @@ export { ProgressField } from './ui/ProgressField'
 export { SubjectCard } from './ui/SubjectCard'
 export { SubjectHeader } from './ui/SubjectHeader'
 export { formatDate } from './lib/formatDate'
+export { AlertModal } from './ui/AlertModal'
 export {
   Dialog,
   DialogContent,

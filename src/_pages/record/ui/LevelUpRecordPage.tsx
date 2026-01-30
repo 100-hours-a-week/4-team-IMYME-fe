@@ -4,11 +4,12 @@ import { Mic } from 'lucide-react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+import { deleteCard } from '@/entities/card'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { LevelUpHeader } from '@/features/levelup'
 import { startWarmup } from '@/features/levelup/model/startWarmup'
 import { useCardDetails } from '@/features/levelup-feedback'
-import { SubjectHeader } from '@/shared'
+import { AlertModal, SubjectHeader } from '@/shared'
 import { Button } from '@/shared/ui/button'
 
 const RECORD_PROGRESS_VALUE = 100
@@ -21,12 +22,14 @@ export function LevelUpRecordPage() {
   const params = useParams()
   const searchParams = useSearchParams()
   const cardIdFromQuery = searchParams.get('cardId')
+  const attemptIdFromQuery = searchParams.get('attemptId')
   const cardIdFromParams = params.id?.toString()
   const cardIdValue = cardIdFromQuery ?? cardIdFromParams
   const cardId = cardIdValue ? Number(cardIdValue) : undefined
 
   const accessToken = useAccessToken()
   const { data } = useCardDetails(accessToken, cardId)
+  const [isBackAlertOpen, setIsBackAlertOpen] = useState(false)
   const [warmupError, setWarmupError] = useState(false)
   const [isStartingWarmup, setIsStartingWarmup] = useState(false)
 
@@ -53,7 +56,25 @@ export function LevelUpRecordPage() {
   }
 
   const handleBack = () => {
+    const hasAttemptId = Boolean(attemptIdFromQuery)
+    if (!hasAttemptId) {
+      setIsBackAlertOpen(true)
+      return
+    }
+
     router.push('/main')
+  }
+
+  const handleBackConfirm = async () => {
+    setIsBackAlertOpen(false)
+    if (accessToken && cardId) {
+      await deleteCard(accessToken, cardId)
+    }
+    router.push('/main')
+  }
+
+  const handleBackCancel = () => {
+    setIsBackAlertOpen(false)
   }
 
   return (
@@ -97,6 +118,16 @@ export function LevelUpRecordPage() {
       <div className="mt-4 flex w-full items-center justify-center">
         <Button variant="record_confirm_btn">녹음 완료 및 피드백 받기</Button>
       </div>
+      <AlertModal
+        open={isBackAlertOpen}
+        onOpenChange={setIsBackAlertOpen}
+        title="학습을 취소하시겠습니까?"
+        description="현재 생성한 카드가 삭제될 수 있습니다."
+        action="나가기"
+        cancel="계속하기"
+        onAction={handleBackConfirm}
+        onCancel={handleBackCancel}
+      />
     </div>
   )
 }

@@ -13,7 +13,6 @@ export function GET(_req: NextRequest) {
   authorizeUrl.searchParams.set('state', state)
 
   const res = NextResponse.redirect(authorizeUrl)
-  console.log(res)
   res.cookies.set('kakao_oauth_state', state, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',

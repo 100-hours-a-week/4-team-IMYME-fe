@@ -26,15 +26,15 @@ export function MyCardList({ selectedCategory, selectedKeyword }: MyCardListProp
   const { data, isLoading, error, refetch } = useMyCardList(accessToken, userId)
 
   if (isLoading) {
-    return <p className={COMMENT_CLASSNAME}>카드를 불러오는 중입니다.</p>
+    return <p className={COMMENT_CLASSNAME}>학습 기록을 불러오는 중입니다...</p>
   }
 
   if (error) {
-    return <p className={COMMENT_CLASSNAME}>카드를 불러오지 못했습니다.</p>
+    return <p className={COMMENT_CLASSNAME}>학습 기록을 불러오지 못했습니다.</p>
   }
 
   if (data?.length === 0) {
-    return <p className={COMMENT_CLASSNAME}>카드가 없습니다.</p>
+    return <p className={COMMENT_CLASSNAME}>최근 학습한 기록이 없습니다.</p>
   }
 
   const shouldFilter = Boolean(selectedCategory) || Boolean(selectedKeyword)
