@@ -16,12 +16,13 @@ type MyCardsResponse = {
   }
 }
 
-export async function getMyCards(accessToken: string): Promise<MyCardItem[]> {
+export async function getMyCards(accessToken: string, limit?: number): Promise<MyCardItem[]> {
   try {
     const response = await httpClient.get<MyCardsResponse>('/cards', {
       headers: {
         Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
       },
+      params: limit ? { limit } : undefined,
     })
 
     return response.data?.data?.cards ?? []
