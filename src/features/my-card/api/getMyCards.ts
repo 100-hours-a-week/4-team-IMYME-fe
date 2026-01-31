@@ -8,7 +8,6 @@ export type MyCardItem = {
   categoryName: string
   keywordId: number
   keywordName: string
-  attempts?: unknown[]
 }
 
 type MyCardsResponse = {

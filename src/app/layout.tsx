@@ -20,7 +20,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="ko">
       <body className="app-shell">
         <div className="app-frame">
-          <Toaster />
+          <Toaster position="top-center" />
           <Provider>{children}</Provider>
         </div>
       </body>

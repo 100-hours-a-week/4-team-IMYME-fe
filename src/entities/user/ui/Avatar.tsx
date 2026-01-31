@@ -31,6 +31,7 @@ export function Avatar({ avatar_src, size }: AvatarProps) {
       className="relative overflow-hidden rounded-full"
     >
       <Image
+        unoptimized
         src={resolvedSrc}
         alt="profile image"
         fill

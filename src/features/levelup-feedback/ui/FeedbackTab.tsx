@@ -12,11 +12,11 @@ import {
 export type FeedbackItem = {
   id: number
   attemptNo: number
-  summary: string
-  keywords: string
-  facts: string
-  understanding: string
-  socraticFeedback: string
+  summary?: string
+  keywords?: string
+  facts?: string
+  understanding?: string
+  socraticFeedback?: string
   createdAt: Date
 }
 

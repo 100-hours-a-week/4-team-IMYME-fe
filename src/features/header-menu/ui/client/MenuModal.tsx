@@ -1,3 +1,5 @@
+'use client'
+
 import { type ReactNode } from 'react'
 
 import { ProfileEditButton, LogoutButton, HelpButton } from '@/features/header-menu'

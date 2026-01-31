@@ -154,7 +154,7 @@ export function LevelUpRecordPage() {
       return
     }
 
-    const uploadResult = await uploadAudio(uploadUrl, completedBlob)
+    const uploadResult = await uploadAudio(uploadUrl, completedBlob, fileExtension)
     if (!uploadResult.ok) {
       toast.error('오디오 업로드에 실패했습니다. 다시 시도해주세요.')
       return

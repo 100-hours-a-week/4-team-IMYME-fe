@@ -1,6 +1,6 @@
 'use client'
 
-import { Mic } from 'lucide-react'
+import { CircleStop, Mic } from 'lucide-react'
 
 type MicrophoneBoxProps = {
   isStartingWarmup: boolean
@@ -59,10 +59,17 @@ export function MicrophoneBox({
           onClick={onMicClick}
           disabled={isStartingWarmup || isMicDisabled}
         >
-          <Mic
-            size={100}
-            className={micIconClassName}
-          />
+          {isPaused ? (
+            <CircleStop
+              size={100}
+              className={micIconClassName}
+            />
+          ) : (
+            <Mic
+              size={100}
+              className={micIconClassName}
+            />
+          )}
         </button>
         <div className="flex flex-col items-center">
           {isRecording && !isPaused ? (

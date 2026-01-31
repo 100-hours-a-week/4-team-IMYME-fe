@@ -99,7 +99,7 @@ export function FilteringTab({ onApply, onClose }: FilteringTabProps) {
           )}
         </div>
       </div>
-      <DrawerFooter className="mt-0 flex items-center">
+      <DrawerFooter className="mt-auto flex items-center">
         <Button
           variant={'filter_btn'}
           onClick={handleApplyClick}
