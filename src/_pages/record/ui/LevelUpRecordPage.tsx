@@ -112,6 +112,8 @@ export function LevelUpRecordPage() {
     setIsBackAlertOpen(false)
     if (accessToken && cardId && attemptId && attemptNo !== 1) {
       await deleteAttempt(accessToken, cardId, attemptId)
+      router.push('/main')
+      return
     }
     if (accessToken && cardId) {
       await deleteCard(accessToken, cardId)
@@ -223,7 +225,7 @@ export function LevelUpRecordPage() {
         />
       )}
       <RecordTipBox />
-      <div className="mt-auto mb-6 flex w-full items-center justify-center gap-4">
+      <div className="mt-auto mb-6 flex w-full items-center justify-center gap-4 pt-4">
         <Button
           variant="record_confirm_btn"
           onClick={handleRecordingComplete}
