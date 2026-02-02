@@ -10,6 +10,9 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'MINE',
   description: "IMYME's Project",
+  icons: {
+    icon: [{ url: '/logo.png', type: 'image/png' }],
+  },
 }
 
 type RootLayoutProps = {
