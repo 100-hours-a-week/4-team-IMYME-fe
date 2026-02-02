@@ -290,6 +290,7 @@ jobs:
 
           # 1. 빌드 아티팩트 복사 (.next, package.json, pnpm-lock.yaml)
           cp -r $APP_DIR/build/.next "$RELEASE_DIR/"
+          cp -r $APP_DIR/build/public "$RELEASE_DIR/"
           cp $APP_DIR/build/package.json "$RELEASE_DIR/"
           cp $APP_DIR/build/pnpm-lock.yaml "$RELEASE_DIR/"
 
