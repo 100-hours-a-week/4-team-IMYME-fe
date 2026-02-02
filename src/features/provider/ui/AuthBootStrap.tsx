@@ -11,7 +11,6 @@ import {
 
 const REFRESH_PATH = '/api/auth/refresh'
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL ?? ''
-const DEVICE_UUID_STORAGE_KEY = 'device_uuid'
 
 const buildServerUrl = (path: string) => {
   const normalizedBase = SERVER_URL.replace(/\/$/, '')
@@ -30,7 +29,6 @@ export function AuthBootstrap() {
 
       const handleRefreshFailure = () => {
         clearAccessToken()
-        window.localStorage.removeItem(DEVICE_UUID_STORAGE_KEY)
         router.replace('/login')
       }
 

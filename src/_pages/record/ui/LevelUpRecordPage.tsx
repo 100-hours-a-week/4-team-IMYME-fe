@@ -148,9 +148,7 @@ export function LevelUpRecordPage() {
 
     const attemptId = audioUrlResult.data.attemptId
     setAttemptId(attemptId)
-    console.log('[record] createAttempt attemptId:', attemptId)
 
-    console.log('[record] presigned attemptId:', audioUrlResult.data?.attemptId)
     const uploadUrl = audioUrlResult.data?.uploadUrl
     if (!uploadUrl) {
       toast.error('오디오 업로드 URL이 비어있습니다.')
@@ -185,7 +183,7 @@ export function LevelUpRecordPage() {
   }
 
   return (
-    <div className="h-full w-full">
+    <div className="flex h-full w-full flex-1 flex-col">
       <LevelUpHeader
         variant="recording"
         onBack={handleBack}
@@ -214,7 +212,7 @@ export function LevelUpRecordPage() {
         />
       )}
       <RecordTipBox />
-      <div className="mt-4 flex w-full items-center justify-center gap-4">
+      <div className="mt-auto flex w-full items-center justify-center gap-4 pb-6">
         <Button
           variant="record_confirm_btn"
           onClick={handleRecordingComplete}

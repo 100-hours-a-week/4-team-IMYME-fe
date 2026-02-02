@@ -1,7 +1,6 @@
 'use client'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared'
-import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
 import {
   Carousel,
   CarouselContent,
@@ -9,6 +8,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/shared/ui/carousel'
+
+import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
 
 type FeedbackTabProps = {
   feedbackData: FeedbackItem[]
@@ -30,13 +31,14 @@ const REVIEW_BOX_CLASSNAME =
   'break-normal min-h-[10vh] w-full rounded-2xl bg-white p-3 whitespace-pre-line text-sm'
 
 const DEFAULT_SHOW_BUTTONS = true
+const COMMENT_CLASSNAME = 'mt-10 text-center'
 
 export function FeedbackTab({
   feedbackData,
   showButtons = DEFAULT_SHOW_BUTTONS,
 }: FeedbackTabProps) {
   if (feedbackData.length === 0) {
-    return <p>피드백 데이터가 없습니다.</p>
+    return <p className={COMMENT_CLASSNAME}>피드백 데이터가 없습니다.</p>
   }
 
   const sortedFeedbackData = [...feedbackData].sort((a, b) => b.attemptNo - a.attemptNo)

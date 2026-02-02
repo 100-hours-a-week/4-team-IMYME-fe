@@ -8,7 +8,13 @@ import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { CategoryList, KeywordList, useCategoryList, useKeywordList } from '@/features/filtering'
 import { FilteringCondition } from '@/features/filtering'
 import { Button } from '@/shared/ui/button'
-import { DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/shared/ui/drawer'
+import {
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/shared/ui/drawer'
 
 type FilteringSelection = {
   category: CategoryItemType | null
@@ -65,6 +71,7 @@ export function FilteringTab({ onApply, onClose }: FilteringTabProps) {
     <DrawerContent className="filtering-tab-frame h-50vh flex-col">
       <DrawerHeader>
         <DrawerTitle>카테고리 선택</DrawerTitle>
+        <DrawerDescription></DrawerDescription>
         <FilteringCondition
           selectedCategory={selectedCategory}
           selectedKeyword={selectedKeyword}
