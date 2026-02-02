@@ -68,6 +68,7 @@ export function LevelUpRecordPage() {
   const [isStartingWarmup, setIsStartingWarmup] = useState(false)
   const [attemptId, setAttemptId] = useState<number | null>(null)
   const [uploadStatus, setUploadStatus] = useState<FeedbackStatus | null>(null)
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false)
 
   useEffect(() => {
     if (!warmupError) return
@@ -131,8 +132,10 @@ export function LevelUpRecordPage() {
   const handleRecordingComplete = async () => {
     if (!accessToken || !cardId) return
 
+    setIsSubmittingFeedback(true)
     const completedBlob = await stopRecordingAndGetBlob()
     if (!completedBlob) {
+      setIsSubmittingFeedback(false)
       toast.error('녹음 파일을 생성하던 중 오류가 발생했습니다. 다시 녹음해주세요.')
       return
     }
@@ -142,6 +145,7 @@ export function LevelUpRecordPage() {
     const fileExtension = MIME_EXTENSION_MAP[completedBlob.type] ?? DEFAULT_AUDIO_EXTENSION
     const audioUrlResult = await getAudioUrl(accessToken, cardId, fileExtension)
     if (!audioUrlResult.ok) {
+      setIsSubmittingFeedback(false)
       toast.error('오디오 업로드 URL을 가져오지 못했습니다. 다시 시도해주세요.')
       return
     }
@@ -151,12 +155,14 @@ export function LevelUpRecordPage() {
 
     const uploadUrl = audioUrlResult.data?.uploadUrl
     if (!uploadUrl) {
+      setIsSubmittingFeedback(false)
       toast.error('오디오 업로드 URL이 비어있습니다.')
       return
     }
 
     const uploadResult = await uploadAudio(uploadUrl, completedBlob, fileExtension)
     if (!uploadResult.ok) {
+      setIsSubmittingFeedback(false)
       toast.error('오디오 업로드에 실패했습니다. 다시 시도해주세요.')
       return
     }
@@ -170,6 +176,7 @@ export function LevelUpRecordPage() {
       durationSeconds,
     )
     if (!completeResult.ok) {
+      setIsSubmittingFeedback(false)
       toast.error('오디오 업로드에 실패했습니다. 다시 시도해주세요.')
       return
     }
@@ -195,7 +202,7 @@ export function LevelUpRecordPage() {
         categoryValue={data?.categoryName ?? ''}
         keywordValue={data?.keywordName ?? ''}
       />
-      {uploadStatus === 'PENDING' ? (
+      {isSubmittingFeedback || uploadStatus === 'PENDING' ? (
         <FeedbackLoader status="PENDING" />
       ) : (
         <MicrophoneBox
@@ -212,10 +219,11 @@ export function LevelUpRecordPage() {
         />
       )}
       <RecordTipBox />
-      <div className="mt-auto flex w-full items-center justify-center gap-4 pb-6">
+      <div className="mt-auto mb-6 flex w-full items-center justify-center gap-4">
         <Button
           variant="record_confirm_btn"
           onClick={handleRecordingComplete}
+          disabled={isSubmittingFeedback}
         >
           녹음 완료 및 피드백 받기
         </Button>

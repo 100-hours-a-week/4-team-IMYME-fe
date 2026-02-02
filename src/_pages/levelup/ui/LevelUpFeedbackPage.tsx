@@ -116,7 +116,7 @@ export function LevelUpFeedbackPage() {
       </div>
       <div className="mt-auto flex w-full flex-col items-center justify-center gap-4">
         <p className="mb-3 text-sm">남은 학습 횟수: {remainingAttempts}</p>
-        <div className="flex w-full items-center justify-center gap-4 pb-6">
+        <div className="mb-6 flex w-full items-center justify-center gap-4">
           <Button
             variant="levelup_feedback_btn"
             onClick={() => {

@@ -44,7 +44,7 @@ export function CardDetailsPage() {
       <div className="flex w-full justify-center">
         <p className="text-sm">남은 학습 횟수: {remainingAttempts}</p>
       </div>
-      <div className="mt-auto flex w-full justify-center pb-6">
+      <div className="mt-auto mb-6 flex w-full justify-center">
         <Button
           className="border-primary text-primary bg-var(--color-background) h-10 w-60 rounded-xl border"
           size={'lg'}
