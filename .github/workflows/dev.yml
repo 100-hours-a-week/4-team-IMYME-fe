@@ -140,6 +140,7 @@ jobs:
         run: |
           mkdir -p deploy
           cp -r .next deploy/
+          cp -r public deploy/ || true
           cp package.json deploy/
           cp pnpm-lock.yaml deploy/
 
