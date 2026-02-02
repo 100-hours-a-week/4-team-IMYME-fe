@@ -13,9 +13,11 @@ import {
   useCardDetails,
   useFeedbackPolling,
 } from '@/features/levelup-feedback'
+import { createAttempt } from '@/features/record'
 import { AlertModal, LevelUpHeader, SubjectHeader } from '@/shared'
 import { Button } from '@/shared/ui/button'
 
+const INITIAL_ATTEMPT_DURATION_SECONDS = 0
 const FAILED_REDIRECT_DELAY_MS = 3000
 
 export function LevelUpFeedbackPage() {
@@ -23,6 +25,7 @@ export function LevelUpFeedbackPage() {
   const searchParams = useSearchParams()
   const accessToken = useAccessToken()
   const [isExitAlertOpen, setIsExitAlertOpen] = useState(false)
+  const [isCreatingAttempt, setIsCreatingAttempt] = useState(false)
   const cardId = Number(searchParams.get('cardId') ?? '')
   const attemptId = Number(searchParams.get('attemptId') ?? '')
   const { data } = useCardDetails(accessToken, cardId)
@@ -72,6 +75,36 @@ export function LevelUpFeedbackPage() {
     setIsExitAlertOpen(true)
   }
 
+  const handleRestudyClick = async () => {
+    if (!cardId) {
+      toast.error('카드 정보를 찾을 수 없습니다.')
+      return
+    }
+    if (!accessToken) {
+      toast.error('로그인이 필요합니다.')
+      return
+    }
+
+    setIsCreatingAttempt(true)
+    const response = await createAttempt(accessToken, cardId, INITIAL_ATTEMPT_DURATION_SECONDS)
+    setIsCreatingAttempt(false)
+    if (!response.ok) {
+      toast.error('학습 시작을 준비하지 못했습니다. 다시 시도해주세요.')
+      return
+    }
+
+    const nextAttemptId = response.data?.attemptId
+    const nextAttemptNo = response.data?.attemptNo
+    if (!nextAttemptId || !nextAttemptNo) {
+      toast.error('학습 시도를 준비하지 못했습니다. 다시 시도해주세요.')
+      return
+    }
+
+    router.push(
+      `/levelup/record?cardId=${cardId}&attemptId=${nextAttemptId}&attemptNo=${nextAttemptNo}`,
+    )
+  }
+
   const handleExitConfirm = async () => {
     if (feedbackData.length === 0) {
       try {
@@ -119,11 +152,8 @@ export function LevelUpFeedbackPage() {
         <div className="mb-6 flex w-full items-center justify-center gap-4">
           <Button
             variant="levelup_feedback_btn"
-            onClick={() => {
-              if (!cardId) return
-              router.push(`/levelup/record?cardId=${cardId}`)
-            }}
-            disabled={remainingAttempts === 0}
+            onClick={handleRestudyClick}
+            disabled={remainingAttempts === 0 || isCreatingAttempt}
           >
             이어서 학습하기
           </Button>

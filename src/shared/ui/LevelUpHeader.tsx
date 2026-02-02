@@ -29,7 +29,7 @@ export function LevelUpHeader({
 }: LevelUpHeaderProps) {
   return (
     <>
-      <div className="flex gap-3">
+      <div className="flex w-full gap-3">
         <BackButton onClick={onBack} />
         <div className="flex flex-col items-start">
           <p className="font-semibold">{title ? title : TITLE_TEXT}</p>
@@ -37,7 +37,7 @@ export function LevelUpHeader({
         </div>
       </div>
       {progressValue ? (
-        <div className="px-6">
+        <div className="flex w-full justify-center px-6">
           <ProgressField
             value={progressValue}
             stepLabel={stepLabel}

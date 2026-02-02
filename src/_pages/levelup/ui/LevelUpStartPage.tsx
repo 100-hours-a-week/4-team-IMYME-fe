@@ -6,6 +6,7 @@ import { CategoryItemType } from '@/entities/category'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { CardNameModal, CategorySelectList, KeywordSelectList } from '@/features/levelup'
 import { createCard } from '@/features/levelup/api/createCard'
+import { createAttempt } from '@/features/record'
 import { LevelUpHeader } from '@/shared'
 
 import type { KeywordItemType } from '@/entities/keyword'
@@ -13,6 +14,7 @@ const STEP_ONE_PROGRESS_VALUE = 33
 const STEP_TWO_PROGRESS_VALUE = 66
 const STEP_ONE_LABEL = '1/3'
 const STEP_TWO_LABEL = '2/3'
+const INITIAL_ATTEMPT_DURATION_SECONDS = 0
 
 export function LevelUpStartPage() {
   const router = useRouter()
@@ -42,8 +44,21 @@ export function LevelUpStartPage() {
     const createdCardId = response?.data?.id
     if (!createdCardId) return
 
+    const attemptResponse = await createAttempt(
+      accessToken,
+      createdCardId,
+      INITIAL_ATTEMPT_DURATION_SECONDS,
+    )
+    if (!attemptResponse.ok) return
+
+    const attemptId = attemptResponse.data?.attemptId
+    const attemptNo = attemptResponse.data?.attemptNo
+    if (!attemptId) return
+
     setIsNameDialogOpen(false)
-    router.push(`/levelup/record?cardId=${createdCardId}`)
+    router.push(
+      `/levelup/record?cardId=${createdCardId}&attemptId=${attemptId}&attemptNo=${attemptNo}`,
+    )
   }
 
   const handleBack = () => {

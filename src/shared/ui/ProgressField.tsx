@@ -8,13 +8,14 @@ type ProgressFieldProps = {
 
 export function ProgressField({ value, stepLabel }: ProgressFieldProps) {
   return (
-    <Field className="w-full max-w-sm">
+    <Field className="max-w-sm">
       <FieldLabel htmlFor="progress-levelup">
         <span className="ml-auto">{stepLabel}</span>
       </FieldLabel>
       <Progress
         value={value}
         id="progress-levelup"
+        className="self-center"
       />
     </Field>
   )

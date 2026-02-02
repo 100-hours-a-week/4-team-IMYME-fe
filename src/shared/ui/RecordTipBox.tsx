@@ -8,7 +8,7 @@ export function RecordTipBox() {
   return (
     <div className={CONTAINER_CLASSNAME}>
       <div className={BOX_CLASSNAME}>
-        <p className={TITLE_CLASSNAME}>녹음 팁</p>
+        <p className={TITLE_CLASSNAME}>💡 녹음 팁</p>
         <p className={TIP_CLASSNAME}>조용한 장소에서 녹음하세요.</p>
         <p className={TIP_CLASSNAME}>명확하게 발음하세요.</p>
         <p className={TIP_CLASSNAME}>자연스러운 속도로 말하세요.</p>

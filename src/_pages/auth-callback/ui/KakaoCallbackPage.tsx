@@ -24,18 +24,14 @@ const buildServerUrl = (path: string) => {
 }
 
 export const createUuidForRegex = (): string => {
-  // 가장 간단하고 표준(UUID v4)
   if (typeof crypto?.randomUUID === 'function') {
-    // 일부 환경에서 대문자가 나올 가능성까지 막기 위해 소문자 처리
     return crypto.randomUUID().toLowerCase()
   }
 
-  // fallback: 16 bytes -> RFC4122 v4 형태로 포맷
   if (typeof crypto?.getRandomValues === 'function') {
     const bytes = new Uint8Array(16)
     crypto.getRandomValues(bytes)
 
-    // RFC4122 version(4) & variant(10xx) 설정
     bytes[6] = (bytes[6] & 0x0f) | 0x40
     bytes[8] = (bytes[8] & 0x3f) | 0x80
 
@@ -43,7 +39,6 @@ export const createUuidForRegex = (): string => {
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
   }
 
-  // crypto가 없으면 생성 불가(원하면 다른 난수로 fallback 가능)
   return ''
 }
 
