@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { startMediaRecorder } from '@/features/record'
 
@@ -12,9 +12,12 @@ type UseMicrophoneResult = {
   isRecording: boolean
   isPaused: boolean
   elapsedSeconds: number
+  recordedDurationSeconds: number
   micPermissionState: string
   isMicAlertOpen: boolean
   setIsMicAlertOpen: (open: boolean) => void
+  autoStopped: boolean
+  resetAutoStopped: () => void
   recordedBlob: Blob | null
   playRecordedAudio: () => boolean
   startRecording: () => Promise<boolean>
@@ -30,8 +33,10 @@ export function useMicrophone(): UseMicrophoneResult {
   const [isRecording, setIsRecording] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [recordedDurationSeconds, setRecordedDurationSeconds] = useState(0)
   const [micPermissionState, setMicPermissionState] = useState<string>(DEFAULT_MIC_PERMISSION_STATE)
   const [isMicAlertOpen, setIsMicAlertOpen] = useState(false)
+  const [autoStopped, setAutoStopped] = useState(false)
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null)
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null)
   const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null)
@@ -45,12 +50,53 @@ export function useMicrophone(): UseMicrophoneResult {
   const remainingMsRef = useRef<number>(MAX_RECORDING_MS)
   const stopResolveRef = useRef<((blob: Blob | null) => void) | null>(null)
 
+  const stopRecording = useCallback(
+    (isAutoStop = false) => {
+      if (recordStartAtRef.current) {
+        const elapsedMs = Date.now() - recordStartAtRef.current
+        elapsedMsRef.current += elapsedMs
+      }
+      setRecordedDurationSeconds(Math.floor(Math.max(0, elapsedMsRef.current) / 1000))
+      setAutoStopped(isAutoStop)
+      if (recordTimeoutRef.current) {
+        window.clearTimeout(recordTimeoutRef.current)
+        recordTimeoutRef.current = null
+      }
+
+      if (recorder && recorder.state !== 'inactive') {
+        try {
+          recorder.stop()
+        } catch {
+          // ignore
+        }
+      }
+
+      if (recordingStream) {
+        recordingStream.getTracks().forEach((track) => track.stop())
+      }
+
+      setRecorder(null)
+      setRecordingStream(null)
+      setIsRecording(false)
+      setIsPaused(false)
+      recordStartAtRef.current = null
+      elapsedMsRef.current = 0
+      remainingMsRef.current = MAX_RECORDING_MS
+      setElapsedSeconds(0)
+    },
+    [recorder, recordingStream],
+  )
+
   useEffect(() => {
     if (!isRecording || isPaused) return
 
     elapsedIntervalRef.current = window.setInterval(() => {
       if (!recordStartAtRef.current) return
       const elapsedMs = elapsedMsRef.current + (Date.now() - recordStartAtRef.current)
+      if (elapsedMs >= MAX_RECORDING_MS) {
+        stopRecording(true)
+        return
+      }
       setElapsedSeconds(Math.floor(Math.max(0, elapsedMs) / 1000))
     }, TIMER_INTERVAL_MS)
 
@@ -60,7 +106,7 @@ export function useMicrophone(): UseMicrophoneResult {
         elapsedIntervalRef.current = null
       }
     }
-  }, [isPaused, isRecording])
+  }, [isPaused, isRecording, stopRecording])
 
   useEffect(() => {
     return () => {
@@ -75,30 +121,6 @@ export function useMicrophone(): UseMicrophoneResult {
       }
     }
   }, [recordingStream])
-
-  const stopRecording = () => {
-    if (recordTimeoutRef.current) {
-      window.clearTimeout(recordTimeoutRef.current)
-      recordTimeoutRef.current = null
-    }
-
-    if (recorder && recorder.state !== 'inactive') {
-      recorder.stop()
-    }
-
-    if (recordingStream) {
-      recordingStream.getTracks().forEach((track) => track.stop())
-    }
-
-    setRecorder(null)
-    setRecordingStream(null)
-    setIsRecording(false)
-    setIsPaused(false)
-    recordStartAtRef.current = null
-    elapsedMsRef.current = 0
-    remainingMsRef.current = MAX_RECORDING_MS
-    setElapsedSeconds(0)
-  }
 
   const checkPermission = async () => {
     if (typeof window === 'undefined') return false
@@ -145,7 +167,7 @@ export function useMicrophone(): UseMicrophoneResult {
     if (!hasPermission) return false
 
     if (isRecording) {
-      stopRecording()
+      stopRecording(false)
       return false
     }
 
@@ -157,6 +179,7 @@ export function useMicrophone(): UseMicrophoneResult {
 
     chunksRef.current = []
     setRecordedBlob(null)
+    setRecordedDurationSeconds(0)
     startResult.recorder.ondataavailable = (event) => {
       if (event.data && event.data.size > 0) {
         chunksRef.current.push(event.data)
@@ -182,12 +205,14 @@ export function useMicrophone(): UseMicrophoneResult {
     setRecordingStream(startResult.stream)
     setIsRecording(true)
     setIsPaused(false)
+    setAutoStopped(false)
+    setRecordedDurationSeconds(0)
     recordStartAtRef.current = Date.now()
     elapsedMsRef.current = 0
     remainingMsRef.current = MAX_RECORDING_MS
     setElapsedSeconds(0)
     recordTimeoutRef.current = window.setTimeout(() => {
-      stopRecording()
+      stopRecording(true)
     }, MAX_RECORDING_MS)
     return true
   }
@@ -218,7 +243,7 @@ export function useMicrophone(): UseMicrophoneResult {
     setIsPaused(false)
     recordStartAtRef.current = Date.now()
     recordTimeoutRef.current = window.setTimeout(() => {
-      stopRecording()
+      stopRecording(true)
     }, remainingMsRef.current)
   }
 
@@ -251,19 +276,24 @@ export function useMicrophone(): UseMicrophoneResult {
 
     return new Promise<Blob | null>((resolve) => {
       stopResolveRef.current = resolve
-      stopRecording()
+      stopRecording(false)
     })
   }
 
-  const getDurationSeconds = () => elapsedSeconds
+  const getDurationSeconds = () =>
+    recordedDurationSeconds > 0 ? recordedDurationSeconds : elapsedSeconds
+  const resetAutoStopped = () => setAutoStopped(false)
 
   return {
     isRecording,
     isPaused,
     elapsedSeconds,
+    recordedDurationSeconds,
     micPermissionState,
     isMicAlertOpen,
     setIsMicAlertOpen,
+    autoStopped,
+    resetAutoStopped,
     recordedBlob,
     playRecordedAudio,
     startRecording,

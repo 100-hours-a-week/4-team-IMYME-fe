@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { deleteCard } from '@/entities/card'
@@ -61,6 +61,8 @@ export function LevelUpRecordPage() {
     elapsedSeconds,
     getDurationSeconds,
     clearRecordedBlob,
+    autoStopped,
+    resetAutoStopped,
   } = useMicrophone()
   const [isBackAlertOpen, setIsBackAlertOpen] = useState(false)
   const [warmupError, setWarmupError] = useState(false)
@@ -129,7 +131,8 @@ export function LevelUpRecordPage() {
     setIsMicAlertOpen(false)
   }
 
-  const handleRecordingComplete = async () => {
+  const handleRecordingComplete = useCallback(async () => {
+    if (isSubmittingFeedback) return
     if (!accessToken || !cardId) return
 
     setIsSubmittingFeedback(true)
@@ -193,7 +196,30 @@ export function LevelUpRecordPage() {
     }
 
     router.push(`/levelup/feedback?${feedbackParams.toString()}`)
-  }
+  }, [
+    isSubmittingFeedback,
+    accessToken,
+    cardId,
+    attemptId,
+    attemptNo,
+    stopRecordingAndGetBlob,
+    getDurationSeconds,
+    clearRecordedBlob,
+    setIsSubmittingFeedback,
+    setUploadStatus,
+    router,
+  ])
+
+  useEffect(() => {
+    if (!autoStopped || !recordedBlob || isSubmittingFeedback) return
+
+    resetAutoStopped()
+    resetAutoStopped()
+    // defer to avoid calling setState synchronously inside the effect
+    setTimeout(() => {
+      void handleRecordingComplete()
+    }, 0)
+  }, [autoStopped, handleRecordingComplete, isSubmittingFeedback, recordedBlob, resetAutoStopped])
 
   return (
     <div className="flex h-full w-full flex-1 flex-col">
