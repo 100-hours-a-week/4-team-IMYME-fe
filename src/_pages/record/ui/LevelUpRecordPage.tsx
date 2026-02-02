@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -40,14 +40,13 @@ const getAudioPublicUrl = (uploadUrl: string) => {
 export function LevelUpRecordPage() {
   const router = useRouter()
 
-  const params = useParams()
   const searchParams = useSearchParams()
-  const cardIdFromQuery = searchParams.get('cardId')
-  const cardIdFromParams = params.id?.toString()
-  const cardIdValue = cardIdFromQuery ?? cardIdFromParams
-  const cardId = cardIdValue ? Number(cardIdValue) : undefined
+  const cardId = Number(searchParams.get('cardId'))
+  const attemptNo = Number(searchParams.get('attemptNo'))
+  const attemptId = Number(searchParams.get('attemptId'))
 
   const accessToken = useAccessToken()
+
   const { data } = useCardDetails(accessToken, cardId)
   const {
     isMicAlertOpen,
@@ -66,7 +65,6 @@ export function LevelUpRecordPage() {
   const [isBackAlertOpen, setIsBackAlertOpen] = useState(false)
   const [warmupError, setWarmupError] = useState(false)
   const [isStartingWarmup, setIsStartingWarmup] = useState(false)
-  const [attemptId, setAttemptId] = useState<number | null>(null)
   const [uploadStatus, setUploadStatus] = useState<FeedbackStatus | null>(null)
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false)
 
@@ -112,7 +110,7 @@ export function LevelUpRecordPage() {
 
   const handleBackConfirm = async () => {
     setIsBackAlertOpen(false)
-    if (accessToken && cardId && attemptId) {
+    if (accessToken && cardId && attemptId && attemptNo !== 1) {
       await deleteAttempt(accessToken, cardId, attemptId)
     }
     if (accessToken && cardId) {
@@ -143,15 +141,12 @@ export function LevelUpRecordPage() {
     const durationSeconds = getDurationSeconds()
 
     const fileExtension = MIME_EXTENSION_MAP[completedBlob.type] ?? DEFAULT_AUDIO_EXTENSION
-    const audioUrlResult = await getAudioUrl(accessToken, cardId, fileExtension)
+    const audioUrlResult = await getAudioUrl(accessToken, cardId, attemptId, fileExtension)
     if (!audioUrlResult.ok) {
       setIsSubmittingFeedback(false)
       toast.error('오디오 업로드 URL을 가져오지 못했습니다. 다시 시도해주세요.')
       return
     }
-
-    const attemptId = audioUrlResult.data.attemptId
-    setAttemptId(attemptId)
 
     const uploadUrl = audioUrlResult.data?.uploadUrl
     if (!uploadUrl) {
@@ -186,7 +181,16 @@ export function LevelUpRecordPage() {
     }
 
     clearRecordedBlob()
-    router.push(`/levelup/feedback?cardId=${cardId}&attemptId=${attemptId}`)
+    const feedbackParams = new URLSearchParams({
+      cardId: String(cardId),
+      attemptId: String(attemptId),
+    })
+
+    if (attemptNo !== null) {
+      feedbackParams.set('attemptNo', String(attemptNo))
+    }
+
+    router.push(`/levelup/feedback?${feedbackParams.toString()}`)
   }
 
   return (

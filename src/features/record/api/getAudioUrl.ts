@@ -16,12 +16,13 @@ type GetAudioUrlResult =
 export async function getAudioUrl(
   accessToken: string,
   cardId: number,
+  attemptId: number,
   fileExtension: string,
 ): Promise<GetAudioUrlResult> {
   try {
     const response = await httpClient.post<GetAudioUrlResponse>(
       '/learning/presigned-url',
-      { cardId, fileExtension },
+      { cardId, attemptId, fileExtension },
       {
         headers: {
           Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
