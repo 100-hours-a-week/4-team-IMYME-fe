@@ -3,10 +3,10 @@ name: Frontend CI/CD v2
 on:
   pull_request:
     branches:
-      - dev
+      - main
   push:
     branches:
-      - dev
+      - main
 
 permissions:
   actions: write
@@ -98,25 +98,25 @@ jobs:
       - name: Build
         env:
           NEXT_PUBLIC_KAKAO_REST_API_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_REST_API_KEY }}
-          NEXT_PUBLIC_KAKAO_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_DEV_KAKAO_REDIRECT_URI }}
-          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_DEV_API_BASE_URL }}
+          NEXT_PUBLIC_KAKAO_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_KAKAO_REDIRECT_URI }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
           NODE_ENV: ${{ secrets.NODE_ENV }}
-          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_DEV_SERVER_URL }}
-          NEXT_PUBLIC_GOOGLE_ANALYTICS: ${{ secrets.NEXT_PUBLIC_DEV_GOOGLE_ANALYTICS }}
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          NEXT_PUBLIC_GOOGLE_ANALYTICS: ${{ secrets.NEXT_PUBLIC_GOOGLE_ANALYTICS }}
 
         run: |
           echo "=== Build env check (masked) ==="
           echo "NODE_ENV=$NODE_ENV"
           echo "NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}"
-          echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_DEV_API_BASE_URL}"
-          echo "NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_DEV_KAKAO_REDIRECT_URI}"
-          echo "NEXT_PUBLIC_GOOGLE_ANALYTICS=${NEXT_PUBLIC_DEV_GOOGLE_ANALYTICS}"
+          echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}"
+          echo "NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI}"
+          echo "NEXT_PUBLIC_GOOGLE_ANALYTICS=${NEXT_PUBLIC_GOOGLE_ANALYTICS}"
 
           pnpm next build
 
       # 9. 이전 아티팩트 삭제
       - name: Delete old artifacts
-        if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
+        if: github.ref == 'refs/heads/main' || github.event.pull_request.merged == true
         uses: actions/github-script@v7
         with:
           script: |
@@ -125,7 +125,7 @@ jobs:
               repo: context.repo.repo,
             });
             for (const artifact of artifacts.data.artifacts) {
-              if (artifact.name === 'frontend-dev-latest') {
+              if (artifact.name === 'frontend-prod-latest') {
                 await github.rest.actions.deleteArtifact({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
@@ -136,7 +136,7 @@ jobs:
 
       # 10. 배포용 파일 준비
       - name: Prepare deployment files
-        if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
+        if: github.ref == 'refs/heads/main' || github.event.pull_request.merged == true
         run: |
           mkdir -p deploy
           cp -r .next deploy/
@@ -146,10 +146,10 @@ jobs:
 
       # 11. 빌드 결과 업로드
       - name: Upload artifact
-        if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
+        if: github.ref == 'refs/heads/main' || github.event.pull_request.merged == true
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-dev-latest
+          name: frontend-prod-latest
           path: deploy/
           retention-days: 15
           overwrite: true
@@ -229,7 +229,7 @@ jobs:
   # 2) CD
   cd:
     needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
@@ -256,26 +256,26 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.DEV_SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.DEV_SERVER_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.PROD_SERVER_HOST }} >> ~/.ssh/known_hosts
 
       # 2. 아티팩트 다운로드
       - name: Download frontend artifact
         uses: actions/download-artifact@v4
         with:
-          name: frontend-dev-latest
+          name: frontend-prod-latest
           path: ./frontend-build
 
       # 3. 서버 전송 (압축해서 빠르게)
-      - name: Copy artifact to dev server
+      - name: Copy artifact to Prod server
         run: |
           tar -czf frontend-build.tar.gz -C ./frontend-build .
-          scp -i ~/.ssh/id_rsa frontend-build.tar.gz ubuntu@${{ secrets.DEV_SERVER_HOST }}:/home/ubuntu/mine/frontend/
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEV_SERVER_HOST }} 'rm -rf /home/ubuntu/mine/frontend/build/* && tar -xzf /home/ubuntu/mine/frontend/frontend-build.tar.gz -C /home/ubuntu/mine/frontend/build && rm /home/ubuntu/mine/frontend/frontend-build.tar.gz'
+          scp -i ~/.ssh/id_rsa frontend-build.tar.gz ubuntu@${{ secrets.PROD_SERVER_HOST }}:/home/ubuntu/mine/frontend/
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.PROD_SERVER_HOST }} 'rm -rf /home/ubuntu/mine/frontend/build/* && tar -xzf /home/ubuntu/mine/frontend/frontend-build.tar.gz -C /home/ubuntu/mine/frontend/build && rm /home/ubuntu/mine/frontend/frontend-build.tar.gz'
 
       # 4. 배포 (release/current 구조)
-      - name: Deploy to Dev Server
+      - name: Deploy to Prod Server
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEV_SERVER_HOST }} 'bash -s' <<'EOF'
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.PROD_SERVER_HOST }} 'bash -s' <<'EOF'
           set -e
 
           APP_DIR=/home/ubuntu/mine/frontend
@@ -351,7 +351,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          BASE_URL="${{ secrets.DEV_BASE_URL }}"
+          BASE_URL="${{ secrets.PROD_BASE_URL }}"
 
           echo "🔎 Smoke 1) Health check: ${BASE_URL}/api/health"
           curl -fsS "${BASE_URL}/api/health" >/dev/null
@@ -393,7 +393,7 @@ jobs:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: success
           title: '🟢 Frontend Deploy Success'
-          content: '프론트엔드 개발 서버 배포 완료!'
+          content: '프론트엔드 운영 서버 배포 완료!'
           color: 0x00ff00
 
   cd-notify-failure:
@@ -407,5 +407,5 @@ jobs:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: failure
           title: '🔴 Frontend Deploy Failed'
-          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 개발 서포 배포 실패!'
+          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 운영 서포 배포 실패!'
           color: 0xff0000
