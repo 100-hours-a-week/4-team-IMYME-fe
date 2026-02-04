@@ -27,6 +27,16 @@ const MIME_EXTENSION_MAP: Record<string, string> = {
   'audio/webm': 'webm',
   'audio/mp4': 'mp4',
 }
+const getAudioPublicUrl = (uploadUrl: string) => {
+  try {
+    const url = new URL(uploadUrl)
+    url.search = ''
+    url.hash = ''
+    return url.toString()
+  } catch {
+    return uploadUrl
+  }
+}
 export function LevelUpRecordPage() {
   const router = useRouter()
 
@@ -144,10 +154,9 @@ export function LevelUpRecordPage() {
     }
 
     const uploadUrl = audioUrlResult.data?.uploadUrl
-    const objectKey = audioUrlResult.data?.objectKey
-    if (!uploadUrl || !objectKey) {
+    if (!uploadUrl) {
       setIsSubmittingFeedback(false)
-      toast.error('오디오 업로드 정보를 가져오지 못했습니다.')
+      toast.error('오디오 업로드 URL이 비어있습니다.')
       return
     }
 
@@ -158,11 +167,12 @@ export function LevelUpRecordPage() {
       return
     }
 
+    const audioUrl = getAudioPublicUrl(uploadUrl)
     const completeResult = await completeAudioUpload(
       accessToken,
       cardId,
       attemptId,
-      objectKey,
+      audioUrl,
       durationSeconds,
     )
     if (!completeResult.ok) {
