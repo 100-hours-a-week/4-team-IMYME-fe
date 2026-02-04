@@ -195,7 +195,7 @@ export function LevelUpRecordPage() {
       feedbackParams.set('attemptNo', String(attemptNo))
     }
 
-    router.push(`/levelup/feedback?${feedbackParams.toString()}`)
+    router.replace(`/levelup/feedback?${feedbackParams.toString()}`)
   }, [
     isSubmittingFeedback,
     accessToken,

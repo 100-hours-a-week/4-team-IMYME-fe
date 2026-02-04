@@ -19,12 +19,13 @@ const buttonVariants = cva(
         login: 'btn-login',
         modal_btn_primary: 'modal-btn-primary',
         mode_btn_primary: 'mode-btn-primary',
-        see_more: 'bg-background max-w-8 max-h-4 text-sm text-black/50 ml-auto mr-10',
-        filter_btn: 'w-full bg-secondary text-primary  border-primary',
+        see_more:
+          'bg-background max-w-8 max-h-4 text-sm text-black/50 ml-auto mr-10 cursor-pointer',
+        filter_btn: 'w-full bg-secondary text-primary  border-primary cursor-pointer',
         confirm_btn_primary: 'confirm-btn-primary',
         cancel_btn_primary: 'cancel-btn-primary',
         record_confirm_btn: 'record-confirm-btn',
-        carousel_btn: 'bg-background',
+        carousel_btn: 'bg-background cursor-pointer',
         levelup_feedback_btn: 'bg-secondary w-40 h-10 rounded-2xl',
       },
       size: {

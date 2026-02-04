@@ -23,6 +23,7 @@ export function CardDetailsPage() {
   const { data } = useCardDetails(accessToken, cardId)
   const { feedbackData } = useFeedbackData(data ?? null)
   const [isCreatingAttempt, setIsCreatingAttempt] = useState(false)
+  const [selectedAttemptNo, setSelectedAttemptNo] = useState<number | null>(null)
 
   const remainingAttempts = data ? Math.max(0, 5 - data.attemptCount) : 0
 
@@ -71,16 +72,19 @@ export function CardDetailsPage() {
       <CardInfo
         createdAt={formatDate(data?.createdAt ?? '')}
         bestLevel={data?.bestLevel ?? null}
-        attemptNo={feedbackData.length}
+        attemptNo={selectedAttemptNo}
         attemptCount={data?.attemptCount ?? null}
       />
-      <FeedbackTab feedbackData={feedbackData} />
+      <FeedbackTab
+        feedbackData={feedbackData}
+        onAttemptNoChange={setSelectedAttemptNo}
+      />
       <div className="flex w-full justify-center">
         <p className="text-sm">남은 학습 횟수: {remainingAttempts}</p>
       </div>
       <div className="mt-auto mb-6 flex w-full justify-center pt-4">
         <Button
-          className="border-primary text-primary bg-var(--color-background) h-10 w-60 rounded-xl border"
+          className="border-primary text-primary bg-var(--color-background) h-10 w-60 cursor-pointer rounded-xl border"
           size={'lg'}
           onClick={handleRestudyClick}
           disabled={remainingAttempts === 0 || isCreatingAttempt}

@@ -44,7 +44,7 @@ export function ProfileDashboard({
         <ChevronLeft />
       </div>
       <div
-        className="w-full"
+        className="w-full cursor-pointer"
         onClick={handleNavigateToMyPage}
       >
         <div className="grid w-full auto-cols-max grid-flow-col items-start gap-4">

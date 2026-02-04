@@ -3,7 +3,7 @@
 type CardInfoProps = {
   createdAt: string
   bestLevel: number | null
-  attemptNo: number
+  attemptNo: number | null
   attemptCount: number | null
 }
 
@@ -21,7 +21,7 @@ export function CardInfo({ createdAt, bestLevel, attemptNo, attemptCount }: Card
       <div className={ATTEMPT_INFO_CLASSNAME}>
         <p>
           {' '}
-          {attemptNo} of {attemptCount ?? 0}
+          {attemptNo ?? 0} of {attemptCount ?? 0}
         </p>
       </div>
     </>

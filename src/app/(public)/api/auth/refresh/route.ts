@@ -10,7 +10,7 @@ const COOKIE_PATH = '/'
 const clearRefreshTokenCookie = (res: NextResponse) => {
   res.cookies.set(REFRESH_TOKEN_COOKIE, '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SECURE === 'true',
     sameSite: 'lax',
     path: COOKIE_PATH,
     maxAge: 0,
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     if (nextRefreshToken) {
       res.cookies.set('refresh_token', String(nextRefreshToken), {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SECURE === 'true',
         sameSite: 'lax',
         path: '/',
       })

@@ -14,7 +14,8 @@ type FilteringConditionProps = {
 
 const WRAPPER_CLASSNAME = 'flex min-h-5 items-start gap-2'
 const TEXT_CLASSNAME = 'flex min-w-0 flex-1 flex-wrap items-center gap-1 break-words'
-const RESET_BUTTON_CLASSNAME = 'ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap'
+const RESET_BUTTON_CLASSNAME =
+  'ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap cursor-pointer'
 
 export function FilteringCondition({
   selectedCategory,

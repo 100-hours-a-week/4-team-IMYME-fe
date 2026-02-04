@@ -12,7 +12,7 @@ export function KeywordItem({ keyword, onClick, isSelected = false }: KeywordIte
   return (
     <div
       key={keyword.id}
-      className={`pt-2 ${selectedClassName}`}
+      className={`cursor-pointer pt-2 ${selectedClassName}`}
     >
       <p
         className="text-md ml-4 font-semibold"
