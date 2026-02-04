@@ -56,7 +56,7 @@ export function LevelUpStartPage() {
     if (!attemptId) return
 
     setIsNameDialogOpen(false)
-    router.push(
+    router.replace(
       `/levelup/record?cardId=${createdCardId}&attemptId=${attemptId}&attemptNo=${attemptNo}`,
     )
   }
