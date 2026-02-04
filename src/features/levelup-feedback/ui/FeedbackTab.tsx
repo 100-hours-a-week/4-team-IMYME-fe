@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useMemo, useState } from 'react'
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared'
 import {
   Carousel,
@@ -7,6 +9,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from '@/shared/ui/carousel'
 
 import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
@@ -14,6 +17,7 @@ import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTyp
 type FeedbackTabProps = {
   feedbackData: FeedbackItem[]
   showButtons?: boolean
+  onAttemptNoChange?: (attemptNo: number) => void
 }
 
 const CAROUSEL_CLASSNAME =
@@ -36,16 +40,40 @@ const COMMENT_CLASSNAME = 'mt-10 text-center'
 export function FeedbackTab({
   feedbackData,
   showButtons = DEFAULT_SHOW_BUTTONS,
+  onAttemptNoChange,
 }: FeedbackTabProps) {
+  const sortedFeedbackData = useMemo(
+    () => [...feedbackData].sort((a, b) => b.attemptNo - a.attemptNo),
+    [feedbackData],
+  )
+
+  const [api, setApi] = useState<CarouselApi | null>(null)
+
+  useEffect(() => {
+    if (!api) return
+
+    const emit = () => {
+      const idx = api.selectedScrollSnap()
+      const attemptNo = sortedFeedbackData[idx]?.attemptNo
+      if (attemptNo != null) onAttemptNoChange?.(attemptNo)
+    }
+
+    emit() // 최초 1회
+    api.on('select', emit)
+    return () => {
+      api.off('select', emit)
+    }
+  }, [api, onAttemptNoChange, sortedFeedbackData])
+
   if (feedbackData.length === 0) {
     return <p className={COMMENT_CLASSNAME}>피드백 데이터가 없습니다.</p>
   }
-
-  const sortedFeedbackData = [...feedbackData].sort((a, b) => b.attemptNo - a.attemptNo)
-
   return (
     <>
-      <Carousel className={CAROUSEL_CLASSNAME}>
+      <Carousel
+        className={CAROUSEL_CLASSNAME}
+        setApi={setApi}
+      >
         <CarouselContent className="flex w-full">
           {sortedFeedbackData.map((feedback) => (
             <CarouselItem
