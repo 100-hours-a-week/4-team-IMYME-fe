@@ -15,13 +15,13 @@ export async function completeAudioUpload(
   accessToken: string,
   cardId: number,
   attemptId: number,
-  objectKey: string,
+  audioUrl: string,
   durationSeconds: number,
 ): Promise<CompleteAudioUploadResult> {
   try {
     const response = await httpClient.put<CompleteAudioUploadResponse>(
       `/cards/${cardId}/attempts/${attemptId}/upload-complete`,
-      { objectKey, durationSeconds },
+      { audioUrl, durationSeconds },
       {
         headers: {
           Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
