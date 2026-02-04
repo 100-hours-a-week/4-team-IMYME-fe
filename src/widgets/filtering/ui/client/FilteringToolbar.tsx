@@ -49,7 +49,7 @@ export function FilteringToolbar({
       >
         <DrawerTrigger className="mr-10 ml-auto flex items-center gap-1">
           <SlidersVertical size={18} />
-          <p className="text-sm">필터</p>
+          <p className="cursor-pointer text-sm">필터</p>
         </DrawerTrigger>
         <FilteringTab
           onApply={handleApply}

@@ -88,6 +88,7 @@
     justify-content: space-evenly;
     margin-top: 10%;
     background-color: #fff;
+    cursor: pointer;
   }
 
   .border-primary {

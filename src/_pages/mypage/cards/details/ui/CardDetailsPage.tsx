@@ -84,7 +84,7 @@ export function CardDetailsPage() {
       </div>
       <div className="mt-auto mb-6 flex w-full justify-center pt-4">
         <Button
-          className="border-primary text-primary bg-var(--color-background) h-10 w-60 rounded-xl border"
+          className="border-primary text-primary bg-var(--color-background) h-10 w-60 cursor-pointer rounded-xl border"
           size={'lg'}
           onClick={handleRestudyClick}
           disabled={remainingAttempts === 0 || isCreatingAttempt}
