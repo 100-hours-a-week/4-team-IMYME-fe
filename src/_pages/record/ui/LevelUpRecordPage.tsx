@@ -22,20 +22,13 @@ import { Button } from '@/shared/ui/button'
 const RECORD_PROGRESS_VALUE = 100
 const RECORD_STEP_LABEL = '3/3'
 const REDIRECT_DELAY_MS = 1500
-const DEFAULT_AUDIO_EXTENSION = 'webm'
-const MIME_EXTENSION_MAP: Record<string, string> = {
-  'audio/webm': 'webm',
-  'audio/mp4': 'mp4',
-}
-const getAudioPublicUrl = (uploadUrl: string) => {
-  try {
-    const url = new URL(uploadUrl)
-    url.search = ''
-    url.hash = ''
-    return url.toString()
-  } catch {
-    return uploadUrl
-  }
+type SupportedAudioContentType = 'audio/mp4' | 'audio/webm' | 'audio/wav' | 'audio/mpeg'
+const MIME_TYPE_DELIMITER = ';'
+const MIME_TO_CONTENT_TYPE_MAP: Record<string, SupportedAudioContentType> = {
+  'audio/webm': 'audio/webm',
+  'audio/mp4': 'audio/mp4',
+  'audio/wav': 'audio/wav',
+  'audio/mpeg': 'audio/mpeg',
 }
 export function LevelUpRecordPage() {
   const router = useRouter()
@@ -145,8 +138,10 @@ export function LevelUpRecordPage() {
 
     const durationSeconds = getDurationSeconds()
 
-    const fileExtension = MIME_EXTENSION_MAP[completedBlob.type] ?? DEFAULT_AUDIO_EXTENSION
-    const audioUrlResult = await getAudioUrl(accessToken, cardId, attemptId, fileExtension)
+    const normalizedMimeType = completedBlob.type.split(MIME_TYPE_DELIMITER)[0]
+    const contentType = MIME_TO_CONTENT_TYPE_MAP[normalizedMimeType] ?? 'audio/webm'
+
+    const audioUrlResult = await getAudioUrl(accessToken, attemptId, contentType)
     if (!audioUrlResult.ok) {
       setIsSubmittingFeedback(false)
       toast.error('오디오 업로드 URL을 가져오지 못했습니다. 다시 시도해주세요.')
@@ -154,25 +149,27 @@ export function LevelUpRecordPage() {
     }
 
     const uploadUrl = audioUrlResult.data?.uploadUrl
-    if (!uploadUrl) {
+    const objectKey = audioUrlResult.data?.objectKey
+    const uploadContentType = audioUrlResult.data?.contentType
+
+    if (!uploadUrl || !objectKey || !uploadContentType) {
       setIsSubmittingFeedback(false)
-      toast.error('오디오 업로드 URL이 비어있습니다.')
+      toast.error('오디오 업로드 정보를 가져오지 못했습니다.')
       return
     }
 
-    const uploadResult = await uploadAudio(uploadUrl, completedBlob, fileExtension)
+    const uploadResult = await uploadAudio(uploadUrl, completedBlob, uploadContentType)
     if (!uploadResult.ok) {
       setIsSubmittingFeedback(false)
       toast.error('오디오 업로드에 실패했습니다. 다시 시도해주세요.')
       return
     }
 
-    const audioUrl = getAudioPublicUrl(uploadUrl)
     const completeResult = await completeAudioUpload(
       accessToken,
       cardId,
       attemptId,
-      audioUrl,
+      objectKey,
       durationSeconds,
     )
     if (!completeResult.ok) {

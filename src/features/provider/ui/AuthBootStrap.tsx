@@ -27,7 +27,8 @@ export function AuthBootstrap() {
     const run = async () => {
       if (accessToken) return
 
-      const handleRefreshFailure = () => {
+      const handleRefreshFailure = (reason: string, details?: Record<string, unknown>) => {
+        console.error('[auth-refresh] failed', { reason, ...details })
         clearAccessToken()
         router.replace('/login')
       }
@@ -35,18 +36,18 @@ export function AuthBootstrap() {
       try {
         const res = await fetch(buildServerUrl(REFRESH_PATH), { method: 'POST' })
         if (!res.ok) {
-          handleRefreshFailure()
+          handleRefreshFailure('response_not_ok', { status: res.status })
           return
         }
 
         const data = (await res.json()) as { access_token?: string }
         if (!data.access_token) {
-          handleRefreshFailure()
+          handleRefreshFailure('missing_access_token')
           return
         }
         setAccessToken(data.access_token)
       } catch {
-        handleRefreshFailure()
+        handleRefreshFailure('request_failed')
       }
     }
 
