@@ -160,7 +160,7 @@ export function LevelUpFeedbackPage() {
           <Button
             variant="levelup_feedback_btn"
             onClick={() => {
-              router.push('/main')
+              router.replace('/main')
             }}
           >
             학습 종료하기

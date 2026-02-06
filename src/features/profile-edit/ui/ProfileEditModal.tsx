@@ -1,5 +1,6 @@
 'use client'
 
+import { getMyProfile } from '@/entities/user'
 import { useProfile, useProfileImage, useSetProfile } from '@/entities/user/model/useUserStore'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import {
@@ -57,7 +58,7 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
 
     const trimmedNickname = nickname.trim()
     const nextNickname = trimmedNickname.length > 0 ? trimmedNickname : null
-    let profileImageUrl: string | null = null
+    // let profileImageUrl: string | null = null
     let profileImageKey: string | null = null
 
     if (file) {
@@ -67,29 +68,35 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
       const uploadResult = await uploadProfileImage(presigned.uploadUrl, file)
       if (!uploadResult.ok) return
 
-      profileImageUrl = presigned.profileImageUrl
+      // profileImageUrl = presigned.profileImageUrl
       profileImageKey = presigned.profileImageKey
     }
 
-    if (!nextNickname && !profileImageUrl && !profileImageKey) return
+    if (!nextNickname && !profileImageKey) return
 
     const result = await updateProfile(accessToken, {
       nickname: nextNickname,
-      profileImageUrl,
       profileImageKey,
     })
 
     if (!result.ok || !result.data) return
 
-    setProfile({
-      id: result.data.id ?? profile.id,
-      nickname: result.data.nickname ?? profile.nickname,
-      profileImageUrl: result.data.profileImageUrl ?? profile.profileImageUrl,
-      level: result.data.level ?? profile.level,
-      activeCardCount: result.data.activeCardCount ?? profile.activeCardCount,
-      consecutiveDays: result.data.consecutiveDays ?? profile.consecutiveDays,
-      winCount: result.data.winCount ?? profile.winCount,
-    })
+    const myProfileResult = await getMyProfile(accessToken)
+    if (!myProfileResult.ok) {
+      setProfile({
+        id: result.data.id ?? profile.id,
+        nickname: result.data.nickname ?? profile.nickname,
+        profileImageUrl: result.data.profileImageUrl ?? profile.profileImageUrl,
+        level: result.data.level ?? profile.level,
+        activeCardCount: result.data.activeCardCount ?? profile.activeCardCount,
+        consecutiveDays: result.data.consecutiveDays ?? profile.consecutiveDays,
+        winCount: result.data.winCount ?? profile.winCount,
+      })
+      onOpenChange(false)
+      return
+    }
+
+    setProfile(myProfileResult.data)
     onOpenChange(false)
   }
 
