@@ -40,12 +40,10 @@ export const createUuidForRegex = (): string => {
 export function KakaoCallbackPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
+  const code = searchParams.get(KAKAO_CODE_QUERY_KEY)
   const setAccessToken = useSetAccessToken()
   useEffect(() => {
     const run = async () => {
-      const code = searchParams.get(KAKAO_CODE_QUERY_KEY)
-
       if (!code) {
         try {
           await fetch(buildServerUrl(REFRESH_TOKEN_CLEAR_PATH), { method: 'POST' })
@@ -90,7 +88,7 @@ export function KakaoCallbackPage() {
     }
 
     void run()
-  }, [router, searchParams, setAccessToken])
+  }, [router, code, setAccessToken])
 
   return null
 }
