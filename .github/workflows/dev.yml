@@ -104,6 +104,7 @@ jobs:
           NODE_ENV: ${{ secrets.NODE_DEV_ENV }}
           NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_DEV_SERVER_URL }}
           NEXT_PUBLIC_GOOGLE_ANALYTICS: ${{ secrets.NEXT_PUBLIC_DEV_GOOGLE_ANALYTICS }}
+          E2E_BASE_URL: ${{ secrets.E2E_DEV_BASE_URL }}
 
         run: |
           echo "=== Build env check (masked) ==="
@@ -113,6 +114,7 @@ jobs:
           echo "NEXT_PUBLIC_SECURE=$NEXT_PUBLIC_SECURE"
           echo "NEXT_PUBLIC_KAKAO_REDIRECT_URI=$NEXT_PUBLIC_KAKAO_REDIRECT_URI"
           echo "NEXT_PUBLIC_GOOGLE_ANALYTICS=$NEXT_PUBLIC_GOOGLE_ANALYTICS"
+          echo "E2E_BASE_URL=$E2E_BASE_URL"
 
           pnpm next build
 
