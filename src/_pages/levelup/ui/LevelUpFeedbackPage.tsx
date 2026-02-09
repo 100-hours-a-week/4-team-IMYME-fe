@@ -69,7 +69,7 @@ export function LevelUpFeedbackPage() {
   })
 
   const feedbackAttemptNo = feedbackData[0]?.attemptNo ?? 0
-  const remainingAttempts = feedbackData.length > 0 ? Math.max(0, 5 - feedbackAttemptNo) : 0
+  const remainingAttempts = feedbackData.length > 0 ? Math.max(0, 5 - feedbackAttemptNo) : '-'
 
   const handleBack = () => {
     setIsExitAlertOpen(true)
