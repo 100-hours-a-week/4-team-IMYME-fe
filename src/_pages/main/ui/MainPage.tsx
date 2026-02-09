@@ -2,8 +2,7 @@
 
 import { useEffect } from 'react'
 
-import { getMyProfile } from '@/entities/user'
-import { useProfile, useSetProfile } from '@/entities/user'
+import { useMyProfileQuery, useProfile, useSetProfile } from '@/entities/user'
 import { useAccessToken } from '@/features/auth'
 import { ModeButton } from '@/features/mode'
 import { RecentCardList } from '@/features/recent-card'
@@ -14,22 +13,15 @@ export function MainPage() {
   const accessToken = useAccessToken()
   const profile = useProfile()
   const setProfile = useSetProfile()
+  const { data: myProfile } = useMyProfileQuery(accessToken, { enabled: Boolean(accessToken) })
 
   useEffect(() => {
-    if (!accessToken || profile.id) {
+    if (!accessToken || profile.id || !myProfile) {
       return
     }
 
-    const run = async () => {
-      const result = await getMyProfile(accessToken)
-      if (!result.ok) {
-        return
-      }
-      setProfile(result.data)
-    }
-
-    void run()
-  }, [accessToken, profile.id, setProfile])
+    setProfile(myProfile)
+  }, [accessToken, myProfile, profile.id, setProfile])
 
   return (
     <>
