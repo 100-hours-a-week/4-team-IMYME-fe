@@ -1,4 +1,4 @@
-'use client' // ✅ Next.js App Router에서 이 파일(훅)을 Client Component 환경에서 실행하도록 강제
+'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
@@ -8,17 +8,12 @@ import { deleteCard } from '@/entities/card'
 import { useAccessToken } from '@/features/auth'
 import { startWarmup } from '@/features/levelup'
 import { deleteAttempt, useCardDetails } from '@/features/levelup-feedback'
-import { completeAudioUpload, getAudioUrl, uploadAudio } from '@/features/record'
-import { useMicrophone } from '@/features/record/model/client/useMicrophone'
+import { completeAudioUpload, getAudioUrl, uploadAudio, useMicrophone } from '@/features/record'
 
 import type { FeedbackStatus } from '@/features/levelup-feedback'
 
 // ✅ 워밍업 실패 시 리다이렉트 딜레이(ms)
 const REDIRECT_DELAY_MS = 1500
-
-// ✅ Blob.type 은 "audio/webm;codecs=opus" 같은 형태가 올 수 있어서
-//    세미콜론 전까지만 "정규화"해서 MIME 비교하려는 목적
-const MIME_TYPE_DELIMITER = ';'
 
 const DEFAULT_CONTENT_TYPE: SupportedAudioContentType = 'audio/webm'
 type SupportedAudioContentType = 'audio/mp4' | 'audio/webm' | 'audio/wav' | 'audio/mpeg'
@@ -194,7 +189,7 @@ export function useLevelUpRecordController(): UseLevelUpRecordControllerResult {
     const durationSeconds = getDurationSeconds()
 
     // ✅ Blob.type이 "audio/webm;codecs=opus" 형태면 세미콜론 전까지만 취함
-    const normalizedMimeType = completedBlob.type.split(MIME_TYPE_DELIMITER)[0]
+    const normalizedMimeType = completedBlob.type.split(';')[0]
 
     // ✅ 지원 목록으로 정규화(없으면 기본값)
     const contentType = MIME_TO_CONTENT_TYPE_MAP[normalizedMimeType] ?? DEFAULT_CONTENT_TYPE

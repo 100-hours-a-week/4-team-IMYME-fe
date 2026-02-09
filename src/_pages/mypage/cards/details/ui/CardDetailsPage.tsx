@@ -4,13 +4,11 @@ import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
+import { useAccessToken } from '@/features/auth'
 import { FeedbackTab, useCardDetails } from '@/features/levelup-feedback'
 import { useFeedbackData, CardInfo } from '@/features/levelup-feedback'
 import { createAttempt } from '@/features/record'
-import { LevelUpHeader } from '@/shared'
-import { SubjectHeader, formatDate } from '@/shared'
-import { Button } from '@/shared/ui/button'
+import { LevelUpHeader, SubjectHeader, formatDate, Button } from '@/shared'
 
 const INITIAL_ATTEMPT_DURATION_SECONDS = 0
 

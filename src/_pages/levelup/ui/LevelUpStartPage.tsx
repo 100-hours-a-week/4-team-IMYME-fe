@@ -3,13 +3,18 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 import { CategoryItemType } from '@/entities/category'
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { CardNameModal, CategorySelectList, KeywordSelectList } from '@/features/levelup'
-import { createCard } from '@/features/levelup/api/createCard'
+import { useAccessToken } from '@/features/auth'
+import {
+  CardNameModal,
+  CategorySelectList,
+  KeywordSelectList,
+  createCard,
+} from '@/features/levelup'
 import { createAttempt } from '@/features/record'
 import { LevelUpHeader } from '@/shared'
 
 import type { KeywordItemType } from '@/entities/keyword'
+
 const STEP_ONE_PROGRESS_VALUE = 33
 const STEP_TWO_PROGRESS_VALUE = 66
 const STEP_ONE_LABEL = '1/3'

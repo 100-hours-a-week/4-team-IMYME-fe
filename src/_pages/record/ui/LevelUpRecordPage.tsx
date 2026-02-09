@@ -2,9 +2,7 @@
 
 import { FeedbackLoader } from '@/features/levelup-feedback'
 import { MicrophoneBox, useLevelUpRecordController } from '@/features/record'
-import { LevelUpHeader } from '@/shared'
-import { AlertModal, RecordTipBox, SubjectHeader } from '@/shared'
-import { Button } from '@/shared/ui/button'
+import { LevelUpHeader, AlertModal, RecordTipBox, SubjectHeader, Button } from '@/shared'
 
 const RECORD_PROGRESS_VALUE = 100
 const RECORD_STEP_LABEL = '3/3'
