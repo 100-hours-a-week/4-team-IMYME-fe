@@ -3,16 +3,18 @@
 import { useRouter } from 'next/navigation'
 
 import { Card, deleteCard } from '@/entities/card'
+import { useOptimisticActiveCardCount } from '@/entities/user'
 import { useUserId } from '@/entities/user/model/useUserStore'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { useMyCardList } from '@/features/my-card/model/useMyCardList'
 import { formatDate } from '@/shared'
+import { StatusMessage } from '@/shared/ui/StatusMessage'
 
 import type { CategoryItemType } from '@/entities/category'
 import type { KeywordItemType } from '@/entities/keyword'
 
 const LIST_CLASSNAME = 'mt-4 flex min-h-0 flex-col items-center gap-4 overflow-y-auto max-h-[60vh]'
-const COMMENT_CLASSNAME = 'mt-10 text-center'
+const ACTIVE_CARD_COUNT_DECREMENT = -1
 
 type MyCardListProps = {
   selectedCategory: CategoryItemType | null
@@ -23,18 +25,19 @@ export function MyCardList({ selectedCategory, selectedKeyword }: MyCardListProp
   const router = useRouter()
   const accessToken = useAccessToken()
   const userId = useUserId()
+  const { applyDeltaWithRollback } = useOptimisticActiveCardCount()
   const { data, isLoading, error, refetch } = useMyCardList(accessToken, userId)
 
   if (isLoading) {
-    return <p className={COMMENT_CLASSNAME}>학습 기록을 불러오는 중입니다...</p>
+    return <StatusMessage message="학습 기록을 불러오는 중입니다..." />
   }
 
   if (error) {
-    return <p className={COMMENT_CLASSNAME}>학습 기록을 불러오지 못했습니다.</p>
+    return <StatusMessage message="학습 기록을 불러오지 못했습니다." />
   }
 
   if (data?.length === 0) {
-    return <p className={COMMENT_CLASSNAME}>최근 학습한 기록이 없습니다.</p>
+    return <StatusMessage message="최근 학습한 기록이 없습니다." />
   }
 
   const shouldFilter = Boolean(selectedCategory) || Boolean(selectedKeyword)
@@ -47,7 +50,7 @@ export function MyCardList({ selectedCategory, selectedKeyword }: MyCardListProp
     : data
 
   if (filteredCards?.length === 0) {
-    return <p className={COMMENT_CLASSNAME}>조건에 맞는 카드가 없습니다.</p>
+    return <StatusMessage message="조건에 맞는 카드가 없습니다." />
   }
 
   return (
@@ -61,10 +64,13 @@ export function MyCardList({ selectedCategory, selectedKeyword }: MyCardListProp
           keywordName={card.keywordName}
           onClick={() => router.push(`/mypage/cards/${card.id}`)}
           onDelete={async () => {
+            const rollback = applyDeltaWithRollback(ACTIVE_CARD_COUNT_DECREMENT)
             const deleted = await deleteCard(accessToken, card.id)
             if (deleted) {
               await refetch()
+              return
             }
+            rollback()
           }}
         />
       ))}

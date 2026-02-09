@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { useProfile, useSetCardCount } from '@/entities/user/model/useUserStore'
+import { useOptimisticActiveCardCount } from '@/entities/user'
 import { useAccessToken } from '@/features/auth'
 import {
   deleteAttempt,
@@ -20,13 +20,13 @@ import { Button } from '@/shared/ui/button'
 
 const INITIAL_ATTEMPT_DURATION_SECONDS = 0
 const FAILED_REDIRECT_DELAY_MS = 3000
+const ACTIVE_CARD_COUNT_INCREMENT = 1
 
 export function LevelUpFeedbackPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const accessToken = useAccessToken()
-  const profile = useProfile()
-  const setActiveCardCount = useSetCardCount()
+  const { applyDelta } = useOptimisticActiveCardCount()
   const [isExitAlertOpen, setIsExitAlertOpen] = useState(false)
   const [isCreatingAttempt, setIsCreatingAttempt] = useState(false)
   const cardId = Number(searchParams.get('cardId') ?? '')
@@ -74,9 +74,7 @@ export function LevelUpFeedbackPage() {
   const feedbackAttemptNo = feedbackData[0]?.attemptNo ?? 0
   const remainingAttempts = feedbackData.length > 0 ? Math.max(0, 5 - feedbackAttemptNo) : '-'
 
-  const optimisticallyIncreaseActiveCardCount = () => {
-    setActiveCardCount(Math.max(0, (profile.activeCardCount ?? 0) + 1))
-  }
+  const optimisticallyIncreaseActiveCardCount = () => applyDelta(ACTIVE_CARD_COUNT_INCREMENT)
 
   const handleBack = () => {
     setIsExitAlertOpen(true)
