@@ -6,6 +6,8 @@ import { useEffect } from 'react'
 import { type UserProfile } from '@/entities/user'
 import { useSetAccessToken } from '@/features/auth/model/client/useAuthStore'
 
+import { createUuidForRegex } from '@/shared/lib/createUuidForRegex'
+
 const DEVICE_UUID_STORAGE_KEY = 'device_uuid'
 const KAKAO_CODE_QUERY_KEY = 'code'
 const DEFAULT_REDIRECT_PATH = '/main'
@@ -16,25 +18,6 @@ const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL ?? ''
 const buildServerUrl = (path: string) => {
   const normalizedBase = SERVER_URL.replace(/\/$/, '')
   return `${normalizedBase}${path}`
-}
-
-export const createUuidForRegex = (): string => {
-  if (typeof crypto?.randomUUID === 'function') {
-    return crypto.randomUUID().toLowerCase()
-  }
-
-  if (typeof crypto?.getRandomValues === 'function') {
-    const bytes = new Uint8Array(16)
-    crypto.getRandomValues(bytes)
-
-    bytes[6] = (bytes[6] & 0x0f) | 0x40
-    bytes[8] = (bytes[8] & 0x3f) | 0x80
-
-    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')
-    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
-  }
-
-  return ''
 }
 
 export function KakaoCallbackPage() {
