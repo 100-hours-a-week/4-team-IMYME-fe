@@ -14,7 +14,7 @@ type UserStoreState = {
     setProfileImage: (imageUrl: string) => void
     setNickname: (nickname: string) => void
     setLevel: (level: number) => void
-    setActiveCardCount: (activeCardCount: number) => void
+    setCardCount: (activeCardCount: number) => void
     setConsecutiveDays: (consecutiveDays: number) => void
     setWinCount: (winCount: number) => void
     getProfile: () => UserProfile
@@ -61,7 +61,7 @@ export const useUserStore = create<UserStoreState>()(
               state.profile.level = level
             })
           },
-          setActiveCardCount: (activeCardCount) => {
+          setCardCount: (activeCardCount) => {
             set((state) => {
               state.profile.activeCardCount = activeCardCount
             })
@@ -95,3 +95,4 @@ export const useClearProfile = () => useUserStore((s) => s.actions.clearProfile)
 export const useNickname = () => useUserStore((s) => s.profile.nickname)
 export const useProfileImage = () => useUserStore((s) => s.profile.profileImageUrl)
 export const useUserId = () => useUserStore((s) => s.profile.id)
+export const useSetCardCount = () => useUserStore((s) => s.actions.setCardCount)

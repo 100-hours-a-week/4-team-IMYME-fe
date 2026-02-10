@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
+import { useOptimisticActiveCardCount } from '@/entities/user'
 import { useAccessToken } from '@/features/auth'
 import {
   deleteAttempt,
@@ -19,11 +20,13 @@ import { Button } from '@/shared/ui/button'
 
 const INITIAL_ATTEMPT_DURATION_SECONDS = 0
 const FAILED_REDIRECT_DELAY_MS = 3000
+const ACTIVE_CARD_COUNT_INCREMENT = 1
 
 export function LevelUpFeedbackPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const accessToken = useAccessToken()
+  const { applyDelta } = useOptimisticActiveCardCount()
   const [isExitAlertOpen, setIsExitAlertOpen] = useState(false)
   const [isCreatingAttempt, setIsCreatingAttempt] = useState(false)
   const cardId = Number(searchParams.get('cardId') ?? '')
@@ -69,7 +72,9 @@ export function LevelUpFeedbackPage() {
   })
 
   const feedbackAttemptNo = feedbackData[0]?.attemptNo ?? 0
-  const remainingAttempts = feedbackData.length > 0 ? Math.max(0, 5 - feedbackAttemptNo) : 0
+  const remainingAttempts = feedbackData.length > 0 ? Math.max(0, 5 - feedbackAttemptNo) : '-'
+
+  const optimisticallyIncreaseActiveCardCount = () => applyDelta(ACTIVE_CARD_COUNT_INCREMENT)
 
   const handleBack = () => {
     setIsExitAlertOpen(true)
@@ -160,7 +165,10 @@ export function LevelUpFeedbackPage() {
           <Button
             variant="levelup_feedback_btn"
             onClick={() => {
-              router.push('/main')
+              if (status === 'COMPLETED') {
+                optimisticallyIncreaseActiveCardCount()
+              }
+              router.replace('/main')
             }}
           >
             학습 종료하기

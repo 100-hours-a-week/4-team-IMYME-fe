@@ -1,26 +1,27 @@
 type UploadAudioResult = { ok: true } | { ok: false; reason: string }
 
-const AUDIO_CONTENT_TYPE_MAP: Record<string, string> = {
-  webm: 'audio/webm',
-  mp4: 'audio/mp4',
-  wav: 'audio/wav',
-  mp3: 'audio/mpeg',
-}
+const ALLOWED_AUDIO_CONTENT_TYPES = ['audio/mp4', 'audio/webm', 'audio/wav', 'audio/mpeg'] as const
+type AllowedAudioContentType = (typeof ALLOWED_AUDIO_CONTENT_TYPES)[number]
 
-const getAudioContentType = (fileExtension: string | null, fallbackType: string) => {
-  if (fileExtension) {
-    return AUDIO_CONTENT_TYPE_MAP[fileExtension] ?? `audio/${fileExtension}`
-  }
-  return fallbackType || 'application/octet-stream'
+const isAllowedContentType = (contentType: string | null): contentType is AllowedAudioContentType =>
+  Boolean(contentType) &&
+  ALLOWED_AUDIO_CONTENT_TYPES.includes(contentType as AllowedAudioContentType)
+
+const createInvalidContentTypeResult = (contentType: string | null): UploadAudioResult => {
+  console.error('Unsupported audio content type', contentType)
+  return { ok: false, reason: 'unsupported_content_type' }
 }
 
 export async function uploadAudio(
   uploadUrl: string,
   file: Blob,
-  fileExtension: string | null,
+  contentType: string | null,
 ): Promise<UploadAudioResult> {
   try {
-    const contentType = getAudioContentType(fileExtension, file.type)
+    if (!isAllowedContentType(contentType)) {
+      return createInvalidContentTypeResult(contentType)
+    }
+
     const response = await fetch(uploadUrl, {
       method: 'PUT',
       headers: {

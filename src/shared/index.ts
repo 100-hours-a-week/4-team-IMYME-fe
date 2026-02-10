@@ -25,3 +25,4 @@ export {
 export { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 export { LevelUpHeader } from './ui/LevelUpHeader'
 export { GoogleAnalytics } from './lib/GoogleAnalytics'
+export { Button } from './ui/button'

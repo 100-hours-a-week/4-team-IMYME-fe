@@ -5,7 +5,9 @@ type CreateAttemptResponse = {
     cardId?: number
     attemptId?: number
     attemptNo?: number
+    status?: string
     createdAt?: string
+    expiresAt?: string
     message?: string
   }
 }

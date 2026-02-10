@@ -9,7 +9,7 @@ type PresignedUrlResponse = {
 }
 
 type PresignedUrlResult =
-  | { ok: true; uploadUrl: string; profileImageUrl: string; profileImageKey: string }
+  | { ok: true; uploadUrl: string; profileImageKey: string }
   | { ok: false; reason: string }
 
 export async function getProfileImageUrl(
@@ -28,14 +28,13 @@ export async function getProfileImageUrl(
     )
 
     const uploadUrl = response.data?.data?.uploadUrl
-    const profileImageUrl = response.data?.data?.profileImageUrl
     const profileImageKey = response.data?.data?.profileImageKey
 
-    if (!uploadUrl || !profileImageUrl || !profileImageKey) {
+    if (!uploadUrl || !profileImageKey) {
       return { ok: false, reason: 'invalid_response' }
     }
 
-    return { ok: true, uploadUrl, profileImageUrl, profileImageKey }
+    return { ok: true, uploadUrl, profileImageKey }
   } catch (error) {
     console.error('Failed to get profile image URL', error)
     return { ok: false, reason: 'request_failed' }
