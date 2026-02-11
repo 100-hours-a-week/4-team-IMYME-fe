@@ -27,6 +27,7 @@ export function PvPRoomsPage() {
         selectedKeyword={selectedKeyword}
         onApply={handleFilteringApply}
         showResetButton={false}
+        variant="category"
       />
       <RoomList />
     </div>
