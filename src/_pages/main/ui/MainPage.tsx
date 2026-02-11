@@ -5,9 +5,10 @@ import { useEffect } from 'react'
 import { useMyProfileQuery, useProfile, useSetProfile } from '@/entities/user'
 import { useAccessToken } from '@/features/auth'
 import { ModeButton } from '@/features/mode'
-import { RecentCardList } from '@/features/recent-card'
 import { RecentListHeader } from '@/shared'
 import { ProfileDashboard } from '@/widgets/profile'
+import { RecentCardList } from '@/widgets/recent-card'
+import { RecentPvPList } from '@/widgets/recent-pvp'
 
 export function MainPage() {
   const accessToken = useAccessToken()
@@ -27,8 +28,11 @@ export function MainPage() {
     <>
       <ProfileDashboard />
       <ModeButton variant="levelup" />
+      {process.env.NEXT_PUBLIC_PVP_OPEN === 'true' ? <ModeButton variant="pvp" /> : null}
       <RecentListHeader variant="levelup" />
       <RecentCardList />
+      <RecentListHeader variant="pvp" />
+      <RecentPvPList />
     </>
   )
 }
