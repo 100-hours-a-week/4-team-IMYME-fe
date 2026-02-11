@@ -47,6 +47,9 @@ export default defineConfig({
         command: `pnpm build && pnpm start -p ${port}`,
         url: baseURL,
         reuseExistingServer: true, // ✅ 이미 떠 있으면 재사용
+        env: {
+          ALLOW_E2E_LOGIN: 'true',
+        },
       }
     : undefined,
 })
