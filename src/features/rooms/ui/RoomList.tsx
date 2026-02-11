@@ -13,12 +13,6 @@ export function RoomList() {
         participantsLabel="1/2"
         hostName="폰노이만의 후예"
       />
-      <Room
-        title="드루와"
-        category="컴퓨터구조"
-        participantsLabel="1/2"
-        hostName="폰노이만의 후예"
-      />
     </div>
   )
 }
