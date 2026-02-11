@@ -1,3 +1,5 @@
+'use client'
+
 import { KeywordItemType } from '@/entities/keyword'
 import { KeywordItem } from '@/entities/keyword/ui/KeywordItem'
 

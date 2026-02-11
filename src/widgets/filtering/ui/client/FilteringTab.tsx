@@ -4,17 +4,22 @@ import { useState } from 'react'
 
 import { CategoryItemType } from '@/entities/category'
 import { KeywordItemType } from '@/entities/keyword'
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { CategoryList, KeywordList, useCategoryList, useKeywordList } from '@/features/filtering'
-import { FilteringCondition } from '@/features/filtering'
-import { Button } from '@/shared/ui/button'
+import { useAccessToken } from '@/features/auth'
+import {
+  CategoryList,
+  KeywordList,
+  useCategoryList,
+  useKeywordList,
+  FilteringCondition,
+} from '@/features/filtering'
 import {
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/shared/ui/drawer'
+  Button,
+} from '@/shared'
 
 type FilteringSelection = {
   category: CategoryItemType | null

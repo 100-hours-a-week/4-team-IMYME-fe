@@ -1,8 +1,7 @@
 'use client'
 
-import { getMyProfile } from '@/entities/user'
-import { useProfile, useProfileImage, useSetProfile } from '@/entities/user/model/useUserStore'
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
+import { useProfile, useProfileImage, useSetProfile, getMyProfile } from '@/entities/user'
+import { useAccessToken } from '@/features/auth'
 import {
   ProfileImageInput,
   NicknameInput,
@@ -13,7 +12,6 @@ import {
   uploadProfileImage,
   updateProfile,
 } from '@/features/profile-edit'
-import defaultAvatar from '@/shared/assets/images/default-avatar.svg'
 import {
   Dialog,
   DialogContent,
@@ -21,7 +19,8 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/shared/ui/dialog'
+  defaultAvatar,
+} from '@/shared'
 
 const MODAL_CONTENT_CLASS = 'flex flex-col sm:min-h-[450px] sm:max-w-[350px] items-center'
 const LABEL_CLASS = 'self-start font-semibold'

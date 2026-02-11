@@ -3,12 +3,10 @@
 import { useRouter } from 'next/navigation'
 
 import { Card, deleteCard } from '@/entities/card'
-import { useOptimisticActiveCardCount } from '@/entities/user'
-import { useUserId } from '@/entities/user/model/useUserStore'
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { useMyCardList } from '@/features/my-card/model/useMyCardList'
-import { formatDate } from '@/shared'
-import { StatusMessage } from '@/shared/ui/StatusMessage'
+import { useOptimisticActiveCardCount, useUserId } from '@/entities/user'
+import { useAccessToken } from '@/features/auth'
+import { useMyCardList } from '@/features/my-card'
+import { formatDate, StatusMessage } from '@/shared'
 
 import type { CategoryItemType } from '@/entities/category'
 import type { KeywordItemType } from '@/entities/keyword'
