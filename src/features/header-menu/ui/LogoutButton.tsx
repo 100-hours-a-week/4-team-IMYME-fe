@@ -2,10 +2,10 @@
 
 import { useRouter } from 'next/navigation'
 
-import { useClearProfile } from '@/entities/user/model/useUserStore'
-import { useAccessToken, useClearAccesstoken } from '@/features/auth/model/client/useAuthStore'
-import { logout } from '@/features/header-menu/api/logout'
-import { Button } from '@/shared/ui/button'
+import { useClearProfile } from '@/entities/user'
+import { useAccessToken, useClearAccesstoken } from '@/features/auth'
+import { logout } from '@/features/header-menu'
+import { Button } from '@/shared'
 
 export function LogoutButton() {
   const accessToken = useAccessToken()

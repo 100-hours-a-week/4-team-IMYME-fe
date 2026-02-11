@@ -5,12 +5,11 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { useAccessToken } from '@/features/auth'
+import { INITIAL_ATTEMPT_DURATION_SECONDS } from '@/features/levelup'
 import { FeedbackTab, useCardDetails } from '@/features/levelup-feedback'
 import { useFeedbackData, CardInfo } from '@/features/levelup-feedback'
 import { createAttempt } from '@/features/record'
 import { LevelUpHeader, SubjectHeader, formatDate, Button } from '@/shared'
-
-const INITIAL_ATTEMPT_DURATION_SECONDS = 0
 
 export function CardDetailsPage() {
   const router = useRouter()

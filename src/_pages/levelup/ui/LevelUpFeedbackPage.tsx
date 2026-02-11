@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 
 import { useOptimisticActiveCardCount } from '@/entities/user'
 import { useAccessToken } from '@/features/auth'
+import { INITIAL_ATTEMPT_DURATION_SECONDS } from '@/features/levelup'
 import {
   deleteAttempt,
   FeedbackLoader,
@@ -18,7 +19,6 @@ import { createAttempt } from '@/features/record'
 import { AlertModal, LevelUpHeader, SubjectHeader } from '@/shared'
 import { Button } from '@/shared/ui/button'
 
-const INITIAL_ATTEMPT_DURATION_SECONDS = 0
 const FAILED_REDIRECT_DELAY_MS = 3000
 const ACTIVE_CARD_COUNT_INCREMENT = 1
 
