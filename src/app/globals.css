@@ -40,7 +40,6 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding-bottom: var(--frame-outer-padding-y);
 }
 
 @media (min-width: 640px) {
@@ -87,7 +86,6 @@
     min-width: 350px;
     min-height: 120px;
     justify-content: space-evenly;
-    margin-top: 10%;
     background-color: #fff;
     cursor: pointer;
   }
