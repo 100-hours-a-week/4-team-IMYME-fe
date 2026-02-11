@@ -27,3 +27,15 @@ export { LevelUpHeader } from './ui/LevelUpHeader'
 export { GoogleAnalytics } from './lib/GoogleAnalytics'
 export { Button } from './ui/button'
 export { ListTab } from './ui/ListTab'
+export { StatusMessage } from './ui/StatusMessage'
+export { default as defaultAvatar } from './assets/images/default-avatar.svg'
+export { createUuidForRegex } from './lib/createUuidForRegex'
+export {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from './ui/drawer'
+export { Spinner } from './ui/Spinner'

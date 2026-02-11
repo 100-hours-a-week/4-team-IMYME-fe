@@ -3,11 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-import {
-  useClearAccesstoken,
-  useSetAccessToken,
-  useAccessToken,
-} from '@/features/auth/model/client/useAuthStore'
+import { useClearAccesstoken, useSetAccessToken, useAccessToken } from '@/features/auth'
 
 const REFRESH_PATH = '/api/auth/refresh'
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL ?? ''

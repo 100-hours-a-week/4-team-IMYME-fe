@@ -4,9 +4,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 import { type UserProfile } from '@/entities/user'
-import { useSetAccessToken } from '@/features/auth/model/client/useAuthStore'
-
-import { createUuidForRegex } from '@/shared/lib/createUuidForRegex'
+import { useSetAccessToken } from '@/features/auth'
+import { createUuidForRegex } from '@/shared'
 
 const DEVICE_UUID_STORAGE_KEY = 'device_uuid'
 const KAKAO_CODE_QUERY_KEY = 'code'
