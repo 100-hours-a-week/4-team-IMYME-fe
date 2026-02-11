@@ -107,7 +107,7 @@ jobs:
           E2E_BASE_URL: ${{ secrets.E2E_DEV_BASE_URL }}
           PERF_BASE_URL: ${{ secrets.PERF_DEV_BASE_URL }}
           ALLOW_E2E_LOGIN: ${{ secrets.ALLOW_DEV_E2E_LOGIN }}
-          PVP_OPEN: ${{ secrets.PVP_DEV_OPEN }}
+          NEXT_PUBLIC_PVP_OPEN: ${{ secrets.PVP_DEV_OPEN }}
 
         run: |
           echo "=== Build env check (masked) ==="
@@ -120,7 +120,7 @@ jobs:
           echo "E2E_BASE_URL=$E2E_BASE_URL"
           echo "PERF_BASE_URL=$PERF_BASE_URL"
           echo "ALLOW_E2E_LOGIN=$ALLOW_E2E_LOGIN"
-          echo "PVP_OPEN=$PVP_OPEN"
+          echo "NEXT_PUBLIC_PVP_OPEN=$PVP_OPEN"
 
           pnpm next build
 

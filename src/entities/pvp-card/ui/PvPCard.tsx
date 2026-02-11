@@ -3,39 +3,45 @@
 import { ArrowRight, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-type CardProps = {
-  id?: number
+type PvPCardProps = {
   title: string
-  date: string
-  categoryName: string
-  keywordName: string
+  resultLabel: string
+  opponentName: string
+  categoryLabel: string
   onClick?: () => void
   onDelete?: () => void
 }
 
 const REVEAL_PX = 50
-const DRAG_THRESHOLD_PX = 6 // 이 이상 움직이면 "드래그"로 판단
+const DRAG_THRESHOLD_PX = 6
 
 const WRAPPER_CLASSNAME = 'relative w-80 self-center overflow-visible'
 const BACK_CLASSNAME = 'absolute right-0 top-0 bottom-0 flex items-center justify-center'
 const CARD_CLASSNAME =
-  'border-secondary flex h-20 max-h-20 w-80 flex-col items-center justify-center gap-2 rounded-xl border bg-background'
-const HEADER_ROW_CLASSNAME = 'mt-2 flex w-full items-center px-4'
-const TAG_ROW_CLASSNAME = 'flex w-full items-center px-4'
-const TAG_LIST_CLASSNAME = 'flex gap-2'
-const TAG_CLASSNAME =
-  'bg-secondary text-primary flex h-5 min-w-15 items-center justify-center rounded-2xl px-2 text-xs'
+  'border-secondary bg-background flex h-20 max-h-20 w-80 flex-col items-center justify-center gap-2 rounded-xl border'
+const ROW_CLASSNAME = 'flex w-full items-center px-4'
+const RESULT_CLASSNAME =
+  'bg-secondary text-primary ml-auto flex h-6 min-w-16 items-center justify-center rounded-2xl px-2 text-sm'
+const CATEGORY_CLASSNAME =
+  'bg-secondary text-primary ml-auto flex h-5 min-w-15 items-center justify-center rounded-2xl px-2 text-xs'
+const ARROW_SIZE = 20
 
-export function Card({ title, date, categoryName, keywordName, onClick, onDelete }: CardProps) {
+export function PvPCard({
+  title,
+  resultLabel,
+  opponentName,
+  categoryLabel,
+  onClick,
+  onDelete,
+}: PvPCardProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
 
-  const [x, setX] = useState(0) // 0 ~ -REVEAL_PX
+  const [x, setX] = useState(0)
   const [dragging, setDragging] = useState(false)
 
   const startXRef = useRef(0)
   const baseXRef = useRef(0)
 
-  // ✅ 드래그/클릭 구분용
   const didDragRef = useRef(false)
   const suppressClickRef = useRef(false)
 
@@ -83,7 +89,6 @@ export function Card({ title, date, categoryName, keywordName, onClick, onDelete
   const handlePointerUp = () => {
     setDragging(false)
 
-    // ✅ 드래그였다면, 뒤이어 발생하는 click을 1회 무시
     if (didDragRef.current) {
       suppressClickRef.current = true
     }
@@ -93,12 +98,10 @@ export function Card({ title, date, categoryName, keywordName, onClick, onDelete
   }
 
   const handleCardClick = () => {
-    // ✅ 드래그 직후 발생한 click이면 무시
     if (suppressClickRef.current) {
       suppressClickRef.current = false
       return
     }
-    // ✅ 탭으로 닫기
     if (isRevealed) close()
 
     if (onClick) {
@@ -146,19 +149,16 @@ export function Card({ title, date, categoryName, keywordName, onClick, onDelete
         onPointerCancel={handlePointerUp}
         onClick={handleCardClick}
       >
-        <div className={HEADER_ROW_CLASSNAME}>
+        <div className={ROW_CLASSNAME}>
           <p className="font-semibold">{title}</p>
-          <p className="ml-auto text-sm">{date}</p>
+          <div className={RESULT_CLASSNAME}>{resultLabel}</div>
         </div>
-
-        <div className={TAG_ROW_CLASSNAME}>
-          <div className={TAG_LIST_CLASSNAME}>
-            <div className={TAG_CLASSNAME}>{categoryName}</div>
-            <div className={TAG_CLASSNAME}>{keywordName}</div>
-          </div>
+        <div className={ROW_CLASSNAME}>
+          <p className="text-sm">VS. {opponentName}</p>
+          <div className={CATEGORY_CLASSNAME}>{categoryLabel}</div>
           <ArrowRight
-            className="ml-auto"
-            size={20}
+            className="ml-2"
+            size={ARROW_SIZE}
           />
         </div>
       </div>

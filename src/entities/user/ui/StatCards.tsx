@@ -5,11 +5,11 @@ const DASHBOARD_INFO_BASE_CLASSNAME = 'text-base'
 
 interface StatCardsProps {
   cardCount: number
-  dates: number
+  winCount: number
   levelCount: number
 }
 
-export function StatCards({ cardCount, dates, levelCount }: StatCardsProps) {
+export function StatCards({ cardCount, winCount, levelCount }: StatCardsProps) {
   return (
     <div className="mt-6 grid grid-cols-3 place-items-center px-3">
       <div className={DASHBOARD_CARD_CLASSNAME}>
@@ -17,8 +17,8 @@ export function StatCards({ cardCount, dates, levelCount }: StatCardsProps) {
         <p className={DASHBOARD_INFO_BASE_CLASSNAME}>카드 수</p>
       </div>
       <div className={DASHBOARD_CARD_CLASSNAME}>
-        <p className={DASHBOARD_INFO_HEADING_CLASSNAME}>{dates}</p>
-        <p className={DASHBOARD_INFO_BASE_CLASSNAME}>연속</p>
+        <p className={DASHBOARD_INFO_HEADING_CLASSNAME}>{winCount}</p>
+        <p className={DASHBOARD_INFO_BASE_CLASSNAME}>승리</p>
       </div>
       <div className={DASHBOARD_CARD_CLASSNAME}>
         <p className={DASHBOARD_INFO_HEADING_CLASSNAME}>{levelCount}</p>

@@ -61,7 +61,7 @@ export function ProfileDashboard({
         </div>
         <StatCards
           cardCount={profile.activeCardCount}
-          dates={profile.consecutiveDays}
+          winCount={profile.winCount}
           levelCount={profile.level}
         />
       </div>
