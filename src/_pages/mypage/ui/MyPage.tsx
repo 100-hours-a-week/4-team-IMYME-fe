@@ -28,6 +28,7 @@ export function MyPage() {
         selectedKeyword={selectedKeyword}
         onApply={handleFilteringApply}
         showResetButton={false}
+        variant="keyword"
       />
       <div className="bg-secondary mt-2 h-px w-full"></div>
       <ListTabs
