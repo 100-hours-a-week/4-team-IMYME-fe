@@ -3,11 +3,15 @@
 import { ArrowRight, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
+type PvPResultVariant = 'win' | 'lose'
+
 type PvPCardProps = {
+  id?: number
   title: string
-  resultLabel: string
+  resultVariant: PvPResultVariant
   opponentName: string
-  categoryLabel: string
+  categoryName: string
+  keywordName: string
   onClick?: () => void
   onDelete?: () => void
 }
@@ -21,19 +25,28 @@ const CARD_CLASSNAME =
   'border-secondary bg-background flex h-20 max-h-20 w-80 flex-col items-center justify-center gap-2 rounded-xl border'
 const ROW_CLASSNAME = 'flex w-full items-center px-4'
 const RESULT_CLASSNAME =
-  'bg-secondary text-primary ml-auto flex h-6 min-w-16 items-center justify-center rounded-2xl px-2 text-sm'
+  'bg-secondary text-primary ml-auto flex h-5 min-w-16 items-center justify-center rounded-2xl px-2 text-sm'
 const CATEGORY_CLASSNAME =
   'bg-secondary text-primary ml-auto flex h-5 min-w-15 items-center justify-center rounded-2xl px-2 text-xs'
+const KEYWORD_CLASSNAME =
+  'bg-secondary text-primary ml-2 flex h-5 min-w-15 items-center justify-center rounded-2xl px-2 text-xs'
 const ARROW_SIZE = 20
+
+const RESULT_LABEL_BY_VARIANT: Record<PvPResultVariant, string> = {
+  win: 'Win',
+  lose: 'Lose',
+}
 
 export function PvPCard({
   title,
-  resultLabel,
+  resultVariant,
   opponentName,
-  categoryLabel,
+  categoryName,
+  keywordName,
   onClick,
   onDelete,
 }: PvPCardProps) {
+  const resultLabel = RESULT_LABEL_BY_VARIANT[resultVariant]
   const wrapperRef = useRef<HTMLDivElement | null>(null)
 
   const [x, setX] = useState(0)
@@ -155,7 +168,8 @@ export function PvPCard({
         </div>
         <div className={ROW_CLASSNAME}>
           <p className="text-sm">VS. {opponentName}</p>
-          <div className={CATEGORY_CLASSNAME}>{categoryLabel}</div>
+          <div className={CATEGORY_CLASSNAME}>{categoryName}</div>
+          <div className={KEYWORD_CLASSNAME}>{keywordName}</div>
           <ArrowRight
             className="ml-2"
             size={ARROW_SIZE}
