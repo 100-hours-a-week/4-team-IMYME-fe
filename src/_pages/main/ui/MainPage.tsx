@@ -25,14 +25,16 @@ export function MainPage() {
   }, [accessToken, myProfile, profile.id, setProfile])
 
   return (
-    <>
+    <div className="flex h-full w-full flex-col pb-6">
       <ProfileDashboard />
-      <ModeButton variant="levelup" />
-      {process.env.NEXT_PUBLIC_PVP_OPEN === 'true' ? <ModeButton variant="pvp" /> : null}
+      <div className="mt-10 flex flex-col gap-6 pb-5">
+        <ModeButton variant="levelup" />
+        {process.env.NEXT_PUBLIC_PVP_OPEN === 'true' ? <ModeButton variant="pvp" /> : null}
+      </div>
       <RecentListHeader variant="levelup" />
       <RecentCardList />
       <RecentListHeader variant="pvp" />
       <RecentPvPList />
-    </>
+    </div>
   )
 }
