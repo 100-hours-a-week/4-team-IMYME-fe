@@ -1,11 +1,17 @@
 'use client'
 
+import { useState } from 'react'
+
 import { useFilteringSelection } from '@/features/filtering'
 import { MyCardList } from '@/features/my-card'
+import { MyPvPCardList } from '@/features/my-pvp-card'
+import { Separator } from '@/shared/ui/separator'
 import { FilteringToolbar } from '@/widgets/filtering'
+import { ListTabs } from '@/widgets/my-page'
 import { ProfileDashboard } from '@/widgets/profile'
 
 export function MyPage() {
+  const [activeList, setActiveList] = useState<'learning' | 'pvp'>('learning')
   const { selectedCategory, selectedKeyword, handleFilteringApply } = useFilteringSelection()
 
   return (
@@ -23,10 +29,19 @@ export function MyPage() {
         onApply={handleFilteringApply}
         showResetButton={false}
       />
-      <MyCardList
-        selectedCategory={selectedCategory}
-        selectedKeyword={selectedKeyword}
+      <div className="bg-secondary mt-2 h-px w-full"></div>
+      <ListTabs
+        activeList={activeList}
+        onChange={setActiveList}
       />
+      {activeList === 'learning' ? (
+        <MyCardList
+          selectedCategory={selectedCategory}
+          selectedKeyword={selectedKeyword}
+        />
+      ) : (
+        <MyPvPCardList />
+      )}
     </div>
   )
 }
