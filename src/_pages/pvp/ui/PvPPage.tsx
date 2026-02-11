@@ -24,7 +24,7 @@ export function PvPPage() {
         onBack={handleBack}
       />
       <div>
-        <div className="mt-5 grid w-full auto-cols-max grid-cols-2 items-center">
+        <div className="mt-5 w-full items-center">
           <p className="mr-auto ml-10 text-base">참여 가능한 매칭 방</p>
         </div>
         <div className="mt-5 flex h-full w-full flex-col items-center justify-center gap-6">
@@ -38,6 +38,7 @@ export function PvPPage() {
             variant="create"
             icon={<UserPlus className={`mr-4 ml-2 ${LEADING_ICON_CLASSNAME}`} />}
             trailingIcon={<ChevronsRight className={TRAILING_ICON_CLASSNAME} />}
+            onClick={() => router.push('/pvp/create')}
           />
         </div>
         <RecentListHeader variant="pvp" />
