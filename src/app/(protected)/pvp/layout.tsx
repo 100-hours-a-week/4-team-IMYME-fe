@@ -2,10 +2,10 @@ import { ReactNode } from 'react'
 
 import { ModeLayout } from '@/widgets/header'
 
-type LevelUpLayoutProps = {
+type PvPLayoutProps = {
   children: ReactNode
 }
 
-export default function LevelUpLayout({ children }: LevelUpLayoutProps) {
+export default function PvPLayout({ children }: PvPLayoutProps) {
   return <ModeLayout>{children}</ModeLayout>
 }

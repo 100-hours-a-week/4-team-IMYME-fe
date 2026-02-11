@@ -27,6 +27,7 @@ const buttonVariants = cva(
         record_confirm_btn: 'record-confirm-btn',
         carousel_btn: 'bg-background cursor-pointer',
         levelup_feedback_btn: 'bg-secondary w-40 h-10 rounded-2xl',
+        matching_method_btn: 'w-80 h-20 min-h-20 border-secondary border rounded-xl gap-6',
       },
       size: {
         default: 'h-9 px-4 py-2',

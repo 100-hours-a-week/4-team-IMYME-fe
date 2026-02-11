@@ -12,7 +12,7 @@ import {
   INITIAL_ATTEMPT_DURATION_SECONDS,
 } from '@/features/levelup'
 import { createAttempt } from '@/features/record'
-import { LevelUpHeader } from '@/shared'
+import { ModeHeader } from '@/shared'
 
 import type { KeywordItemType } from '@/entities/keyword'
 
@@ -82,8 +82,9 @@ export function LevelUpStartPage() {
 
   return (
     <div className="h-full w-full">
-      <LevelUpHeader
-        variant={hasSelectedCategory ? 'keyword' : 'category'}
+      <ModeHeader
+        mode="levelup"
+        step={hasSelectedCategory ? 'keyword' : 'category'}
         onBack={handleBack}
         progressValue={progressValue}
         stepLabel={progressLabel}

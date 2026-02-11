@@ -23,7 +23,8 @@ export function useMyProfileQuery(
   const enabled = options?.enabled ?? true
 
   const query = useQuery({
-    queryKey: ['myProfile', accessToken],
+    queryKey: ['myProfile'],
+    enabled: Boolean(accessToken) && enabled,
     queryFn: async () => {
       if (!accessToken) {
         return undefined
@@ -34,7 +35,6 @@ export function useMyProfileQuery(
       }
       return result.data
     },
-    enabled,
   })
 
   return {

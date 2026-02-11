@@ -23,7 +23,7 @@ export {
   DialogClose,
 } from './ui/dialog'
 export { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
-export { LevelUpHeader } from './ui/LevelUpHeader'
+export { ModeHeader } from './ui/ModeHeader'
 export { GoogleAnalytics } from './lib/GoogleAnalytics'
 export { Button } from './ui/button'
 export { ListTab } from './ui/ListTab'
