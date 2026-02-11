@@ -1,7 +1,4 @@
-import { Provider } from '@/features/provider'
-import { GoogleAnalytics } from '@/shared'
-import { WebVitalsTracker } from '@/shared/lib/WebVitalsTracker'
-import { Toaster } from '@/shared/ui/sonner'
+import { GlobalLayout } from '@/widgets/layouts'
 
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
@@ -24,14 +21,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <body className="app-shell">
-        <WebVitalsTracker />
-        {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS ? (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS} />
-        ) : null}
-        <div className="app-frame">
-          <Toaster position="top-center" />
-          <Provider>{children}</Provider>
-        </div>
+        <GlobalLayout>{children}</GlobalLayout>
       </body>
     </html>
   )
