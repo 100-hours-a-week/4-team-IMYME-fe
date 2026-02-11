@@ -10,7 +10,7 @@ import {
   useLevelUpFeedbackController,
 } from '@/features/levelup-feedback'
 import { createAttempt } from '@/features/record'
-import { AlertModal, LevelUpHeader, SubjectHeader, Button } from '@/shared'
+import { AlertModal, ModeHeader, SubjectHeader, Button } from '@/shared'
 
 const ACTIVE_CARD_COUNT_INCREMENT = 1
 
@@ -40,8 +40,9 @@ export function LevelUpFeedbackPage() {
   })
   return (
     <div className="flex h-full w-full flex-1 flex-col">
-      <LevelUpHeader
-        variant="feedback"
+      <ModeHeader
+        mode="levelup"
+        step="feedback"
         onBack={handleBack}
         title=""
         progressValue={100}

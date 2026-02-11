@@ -2,11 +2,11 @@ import { Header } from './client/Header'
 
 import type { ReactNode } from 'react'
 
-type LevelUpLayoutProps = {
+type ModeLayoutProps = {
   children: ReactNode
 }
 
-export function LevelUpLayout({ children }: LevelUpLayoutProps) {
+export function ModeLayout({ children }: ModeLayoutProps) {
   return (
     <>
       <Header showMenu={false} />

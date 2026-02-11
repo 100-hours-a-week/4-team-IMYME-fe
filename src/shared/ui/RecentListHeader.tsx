@@ -21,7 +21,7 @@ export function RecentListHeader({ variant }: RecentListHeaderProps) {
   const router = useRouter()
 
   const handleSeeMore = () => {
-    router.push('/mypage')
+    router.replace('/mypage')
   }
 
   return (
