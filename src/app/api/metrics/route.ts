@@ -36,12 +36,19 @@ const inpHistogram = new Histogram({
   buckets: [100, 200, 300, 500, 1000], // Common INP thresholds
 })
 
+const ttfbHistogram = new Histogram({
+  name: 'nextjs_ttfb',
+  help: 'Time to First Byte (in ms)',
+  labelNames: [],
+  buckets: [50, 100, 200, 300, 500, 800, 1200, 2000],
+})
 // A map to easily access the correct histogram
 const histograms: Record<string, Histogram> = {
   FCP: fcpHistogram,
   LCP: lcpHistogram,
   CLS: clsHistogram,
-  INP: inpHistogram, // Add INP to the map
+  INP: inpHistogram,
+  TTFB: ttfbHistogram,
 }
 
 /**
