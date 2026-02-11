@@ -100,3 +100,12 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 uploads/
+
+# Playwright
+playwright-report/
+test-results/
+
+# Lighthouse reports (Playwright perf)
+lighthouse/
+perf-results/
+artifacts/har/
