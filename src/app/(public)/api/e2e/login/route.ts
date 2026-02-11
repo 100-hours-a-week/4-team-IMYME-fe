@@ -8,8 +8,8 @@ const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localho
 const REFRESH_TOKEN_COOKIE = 'refresh_token'
 
 export async function POST(req: Request) {
-  // ✅ 운영에 노출 방지
-  if (process.env.NODE_ENV === 'production') {
+  // ✅ 운영에 노출 방지 (명시 플래그로만 허용)
+  if (process.env.ALLOW_E2E_LOGIN !== 'true') {
     return NextResponse.json({ message: 'Not allowed' }, { status: 404 })
   }
 
