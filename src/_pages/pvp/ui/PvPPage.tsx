@@ -23,8 +23,10 @@ export function PvPPage() {
         step="matching_list"
         onBack={handleBack}
       />
-      <div className="mt-5">
-        <p className="mr-auto ml-10 text-base">매칭 방식 선택</p>
+      <div>
+        <div className="mt-5 grid w-full auto-cols-max grid-cols-2 items-center">
+          <p className="mr-auto ml-10 text-base">참여 가능한 매칭 방</p>
+        </div>
         <div className="mt-5 flex h-full w-full flex-col items-center justify-center gap-6">
           <MatchingSelectButton
             variant="enter"
