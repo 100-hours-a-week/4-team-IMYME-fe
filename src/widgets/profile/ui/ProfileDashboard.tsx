@@ -3,8 +3,7 @@
 import { ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-import { Avatar, Nickname, StatCards } from '@/entities/user'
-import { useProfile } from '@/entities/user/model/useUserStore'
+import { Avatar, Nickname, StatCards, useProfile } from '@/entities/user'
 
 const AVATAR_SIZE_PX = 60
 

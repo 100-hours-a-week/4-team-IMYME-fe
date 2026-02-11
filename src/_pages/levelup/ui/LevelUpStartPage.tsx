@@ -9,6 +9,7 @@ import {
   CategorySelectList,
   KeywordSelectList,
   createCard,
+  INITIAL_ATTEMPT_DURATION_SECONDS,
 } from '@/features/levelup'
 import { createAttempt } from '@/features/record'
 import { LevelUpHeader } from '@/shared'
@@ -19,7 +20,6 @@ const STEP_ONE_PROGRESS_VALUE = 33
 const STEP_TWO_PROGRESS_VALUE = 66
 const STEP_ONE_LABEL = '1/3'
 const STEP_TWO_LABEL = '2/3'
-const INITIAL_ATTEMPT_DURATION_SECONDS = 0
 
 export function LevelUpStartPage() {
   const router = useRouter()

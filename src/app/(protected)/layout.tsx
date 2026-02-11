@@ -1,4 +1,4 @@
-import { AuthBootstrap } from '@/features/provider'
+import { ProtectedLayout as ProtectedLayoutWrapper } from '@/widgets/layouts'
 
 import type { ReactNode } from 'react'
 
@@ -7,10 +7,5 @@ type ProtectedLayoutProps = {
 }
 
 export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
-  return (
-    <>
-      <AuthBootstrap />
-      {children}
-    </>
-  )
+  return <ProtectedLayoutWrapper>{children}</ProtectedLayoutWrapper>
 }

@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
-import { getAttemptDetails } from '@/features/levelup-feedback/api/getAttemptDetails'
-
 import {
+  getAttemptDetails,
   FeedbackItem,
   FeedbackProcessingStep,
   FeedbackStatus,
   PROCESSING_STEPS,
-} from './feedbackTypes'
+} from '@/features/levelup-feedback'
 
 const POLL_INTERVAL_MS = 3000
 const FEEDBACK_TIMEOUT_MS = 5 * 60 * 1000
