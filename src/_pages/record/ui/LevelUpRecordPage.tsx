@@ -2,7 +2,7 @@
 
 import { FeedbackLoader } from '@/features/levelup-feedback'
 import { MicrophoneBox, useLevelUpRecordController } from '@/features/record'
-import { LevelUpHeader, AlertModal, RecordTipBox, SubjectHeader, Button } from '@/shared'
+import { ModeHeader, AlertModal, RecordTipBox, SubjectHeader, Button } from '@/shared'
 
 const RECORD_PROGRESS_VALUE = 100
 const RECORD_STEP_LABEL = '3/3'
@@ -29,8 +29,9 @@ export function LevelUpRecordPage() {
 
   return (
     <div className="flex h-full w-full flex-1 flex-col">
-      <LevelUpHeader
-        variant="recording"
+      <ModeHeader
+        mode="levelup"
+        step="recording"
         onBack={() => handleBackAlertOpenChange(true)}
         progressValue={RECORD_PROGRESS_VALUE}
         stepLabel={RECORD_STEP_LABEL}

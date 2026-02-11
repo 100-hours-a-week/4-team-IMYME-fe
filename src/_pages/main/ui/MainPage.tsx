@@ -33,8 +33,12 @@ export function MainPage() {
       </div>
       <RecentListHeader variant="levelup" />
       <RecentCardList />
-      <RecentListHeader variant="pvp" />
-      <RecentPvPList />
+      {process.env.NEXT_PUBLIC_PVP_OPEN !== 'true' ? null : (
+        <>
+          <RecentListHeader variant="pvp" />
+          <RecentPvPList />
+        </>
+      )}
     </div>
   )
 }
