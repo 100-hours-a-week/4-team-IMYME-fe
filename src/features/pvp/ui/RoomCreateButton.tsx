@@ -42,7 +42,7 @@ export function RoomCreateButton({ variant, disabled, onClick }: RoomCreateButto
     <div className={WRAPPER_CLASSNAME}>
       <Button
         className={BUTTON_CLASSNAME}
-        disabled={disabled || currentVariant === 'complete'}
+        disabled={disabled || currentVariant === 'complete' || currentVariant === 'waiting'}
         onClick={handleClick}
       >
         {LABEL_BY_VARIANT[currentVariant]}

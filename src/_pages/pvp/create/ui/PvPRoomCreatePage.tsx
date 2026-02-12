@@ -1,16 +1,18 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-
+import { usePvPRoomCreateExitGuard } from '@/features/pvp'
 import { ModeHeader } from '@/shared'
 import { PvPMatchingCreate } from '@/widgets/pvp-matching-create'
 
 export function PvPRoomCreatePage() {
-  const router = useRouter()
-
-  const handleBack = () => {
-    router.back()
-  }
+  const {
+    isExitAlertOpen,
+    handleBack,
+    handleExitCancel,
+    handleExitConfirm,
+    handleWaitingChange,
+    setIsExitAlertOpen,
+  } = usePvPRoomCreateExitGuard()
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -19,7 +21,13 @@ export function PvPRoomCreatePage() {
         step="matching_create"
         onBack={handleBack}
       />
-      <PvPMatchingCreate />
+      <PvPMatchingCreate
+        onExitGuardChange={handleWaitingChange}
+        isExitAlertOpen={isExitAlertOpen}
+        onExitAlertOpenChange={setIsExitAlertOpen}
+        onExitConfirm={handleExitConfirm}
+        onExitCancel={handleExitCancel}
+      />
     </div>
   )
 }
