@@ -6,6 +6,7 @@ type RoomNameSettingProps = {
   selectedCategoryName?: string
   roomName: string
   onRoomNameChange: (value: string) => void
+  disabled?: boolean
 }
 
 const WRAPPER_CLASSNAME = 'max-w-[70vh]'
@@ -19,6 +20,7 @@ export function RoomNameSetting({
   selectedCategoryName,
   roomName,
   onRoomNameChange,
+  disabled = false,
 }: RoomNameSettingProps) {
   return (
     <div className={WRAPPER_CLASSNAME}>
@@ -39,6 +41,7 @@ export function RoomNameSetting({
             className="border-secondary"
             value={roomName}
             onChange={(event) => onRoomNameChange(event.target.value)}
+            disabled={disabled}
           />
           <FieldDescription>방 이름은 1자 이상 10자 이하로 입력해주세요.</FieldDescription>
           <FieldDescription>비방/욕설이 담긴 단어는 포함하실 수 없습니다.</FieldDescription>
