@@ -3,12 +3,19 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 import { CategoryItemType } from '@/entities/category'
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { CardNameModal, CategorySelectList, KeywordSelectList } from '@/features/levelup'
-import { createCard } from '@/features/levelup/api/createCard'
-import { LevelUpHeader } from '@/shared'
+import { useAccessToken } from '@/features/auth'
+import {
+  CardNameModal,
+  CategorySelectList,
+  KeywordSelectList,
+  createCard,
+  INITIAL_ATTEMPT_DURATION_SECONDS,
+} from '@/features/levelup'
+import { createAttempt } from '@/features/record'
+import { ModeHeader } from '@/shared'
 
 import type { KeywordItemType } from '@/entities/keyword'
+
 const STEP_ONE_PROGRESS_VALUE = 33
 const STEP_TWO_PROGRESS_VALUE = 66
 const STEP_ONE_LABEL = '1/3'
@@ -42,8 +49,21 @@ export function LevelUpStartPage() {
     const createdCardId = response?.data?.id
     if (!createdCardId) return
 
+    const attemptResponse = await createAttempt(
+      accessToken,
+      createdCardId,
+      INITIAL_ATTEMPT_DURATION_SECONDS,
+    )
+    if (!attemptResponse.ok) return
+
+    const attemptId = attemptResponse.data?.attemptId
+    const attemptNo = attemptResponse.data?.attemptNo
+    if (!attemptId) return
+
     setIsNameDialogOpen(false)
-    router.push(`/levelup/record?cardId=${createdCardId}`)
+    router.replace(
+      `/levelup/record?cardId=${createdCardId}&attemptId=${attemptId}&attemptNo=${attemptNo}`,
+    )
   }
 
   const handleBack = () => {
@@ -62,8 +82,9 @@ export function LevelUpStartPage() {
 
   return (
     <div className="h-full w-full">
-      <LevelUpHeader
-        variant={hasSelectedCategory ? 'keyword' : 'category'}
+      <ModeHeader
+        mode="levelup"
+        step={hasSelectedCategory ? 'keyword' : 'category'}
         onBack={handleBack}
         progressValue={progressValue}
         stepLabel={progressLabel}

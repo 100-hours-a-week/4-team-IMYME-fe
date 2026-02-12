@@ -1,7 +1,7 @@
 import { type ChangeEvent, type FocusEvent, useState } from 'react'
 
-import { useNickname } from '@/entities/user/model/useUserStore'
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
+import { useNickname } from '@/entities/user'
+import { useAccessToken } from '@/features/auth'
 import { checkNicknameAvailability, validateNickname } from '@/features/profile-edit'
 
 const ERROR_MESSAGES: Record<

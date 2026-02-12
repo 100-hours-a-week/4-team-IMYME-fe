@@ -24,7 +24,6 @@ export async function checkNicknameAvailability(
       },
     })
 
-    console.log(response.data)
     return {
       ok: true,
       isAvailable: Boolean(response.data?.data?.available),

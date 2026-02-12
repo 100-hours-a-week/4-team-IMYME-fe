@@ -28,6 +28,7 @@ export function ProfileImageInput({
         htmlFor={inputId}
       >
         <Image
+          unoptimized
           src={imageSrc}
           alt="프로필 이미지"
           className={`rounded-full object-cover ${IMAGE_SIZE_CLASS}`}

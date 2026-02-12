@@ -3,15 +3,10 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-import {
-  useClearAccesstoken,
-  useSetAccessToken,
-  useAccessToken,
-} from '@/features/auth/model/client/useAuthStore'
+import { useClearAccesstoken, useSetAccessToken, useAccessToken } from '@/features/auth'
 
 const REFRESH_PATH = '/api/auth/refresh'
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL ?? ''
-const DEVICE_UUID_STORAGE_KEY = 'device_uuid'
 
 const buildServerUrl = (path: string) => {
   const normalizedBase = SERVER_URL.replace(/\/$/, '')
@@ -28,27 +23,27 @@ export function AuthBootstrap() {
     const run = async () => {
       if (accessToken) return
 
-      const handleRefreshFailure = () => {
+      const handleRefreshFailure = (reason: string, details?: Record<string, unknown>) => {
+        console.error('[auth-refresh] failed', { reason, ...details })
         clearAccessToken()
-        window.localStorage.removeItem(DEVICE_UUID_STORAGE_KEY)
         router.replace('/login')
       }
 
       try {
         const res = await fetch(buildServerUrl(REFRESH_PATH), { method: 'POST' })
         if (!res.ok) {
-          handleRefreshFailure()
+          handleRefreshFailure('response_not_ok', { status: res.status })
           return
         }
 
         const data = (await res.json()) as { access_token?: string }
         if (!data.access_token) {
-          handleRefreshFailure()
+          handleRefreshFailure('missing_access_token')
           return
         }
         setAccessToken(data.access_token)
       } catch {
-        handleRefreshFailure()
+        handleRefreshFailure('request_failed')
       }
     }
 

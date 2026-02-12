@@ -82,7 +82,7 @@ export function CardNameModal({
             </Field>
           </div>
         </div>
-        <DialogFooter className="flex w-full justify-center gap-5">
+        <DialogFooter className="flex w-full flex-row justify-center gap-3 sm:gap-5">
           <ConfirmButton
             disabled={isConfirmDisabled}
             onClick={() => onConfirm(cardName)}

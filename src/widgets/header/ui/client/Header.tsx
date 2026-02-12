@@ -38,7 +38,7 @@ export function Header({ showMenu = true, goMain = false }: HeaderProps) {
       {showMenu ? (
         <>
           <MenuModal
-            trigger={<Menu className="h-5 w-5" />}
+            trigger={<Menu className="h-5 w-5 cursor-pointer" />}
             open={menuOpen}
             onOpenChange={handleMenuOpenChange}
             onClickProfileEdit={handleProfileEditRequest}

@@ -2,7 +2,6 @@ import { httpClient } from '@/shared'
 
 type UpdateProfilePayload = {
   nickname: string | null
-  profileImageUrl: string | null
   profileImageKey: string | null
 }
 

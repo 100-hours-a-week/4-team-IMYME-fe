@@ -15,7 +15,7 @@ export function GET(_req: NextRequest) {
   const res = NextResponse.redirect(authorizeUrl)
   res.cookies.set('kakao_oauth_state', state, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SECURE === 'true',
     sameSite: 'lax',
     path: '/',
     maxAge: 60 * 10, // 10분

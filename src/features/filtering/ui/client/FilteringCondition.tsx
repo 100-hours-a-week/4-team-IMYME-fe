@@ -12,8 +12,10 @@ type FilteringConditionProps = {
   showResetButton?: boolean
 }
 
-const WRAPPER_CLASSNAME = 'flex min-h-5 items-center gap-1'
-const RESET_BUTTON_CLASSNAME = 'ml-auto flex items-center gap-2'
+const WRAPPER_CLASSNAME = 'flex min-h-5 items-start gap-2'
+const TEXT_CLASSNAME = 'flex min-w-0 flex-1 flex-wrap items-center gap-1 break-words'
+const RESET_BUTTON_CLASSNAME =
+  'ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap cursor-pointer'
 
 export function FilteringCondition({
   selectedCategory,
@@ -23,15 +25,17 @@ export function FilteringCondition({
 }: FilteringConditionProps) {
   return (
     <div className={WRAPPER_CLASSNAME}>
-      {selectedCategory ? selectedCategory.categoryName : ''}
-      {selectedKeyword ? (
-        <>
-          <ChevronRight size={16} />
-          {selectedKeyword.keywordName}
-        </>
-      ) : (
-        ''
-      )}
+      <div className={TEXT_CLASSNAME}>
+        {selectedCategory ? selectedCategory.categoryName : ''}
+        {selectedKeyword ? (
+          <>
+            <ChevronRight size={16} />
+            {selectedKeyword.keywordName}
+          </>
+        ) : (
+          ''
+        )}
+      </div>
       {showResetButton ? (
         <div
           className={RESET_BUTTON_CLASSNAME}

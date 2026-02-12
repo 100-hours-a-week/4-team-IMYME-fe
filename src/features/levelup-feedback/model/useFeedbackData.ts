@@ -2,11 +2,12 @@
 
 import { useMemo } from 'react'
 
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { useAttemptDetailsList } from '@/features/levelup-feedback'
-
-import type { CardDetails } from '@/features/levelup-feedback'
-import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
+import { useAccessToken } from '@/features/auth'
+import {
+  useAttemptDetailsList,
+  type CardDetails,
+  type FeedbackItem,
+} from '@/features/levelup-feedback'
 
 type UseFeedbackDataResult = {
   feedbackData: FeedbackItem[]

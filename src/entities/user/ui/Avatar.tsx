@@ -5,6 +5,7 @@ import { DefaultAvatar } from '@/shared'
 interface AvatarProps {
   avatar_src: string
   size: number
+  onError?: () => void
 }
 
 const KAKAO_CDN_HTTP_PREFIX = 'http://k.kakaocdn.net'
@@ -22,7 +23,7 @@ const normalizeAvatarSrc = (src: string) => {
   return src
 }
 
-export function Avatar({ avatar_src, size }: AvatarProps) {
+export function Avatar({ avatar_src, size, onError }: AvatarProps) {
   const resolvedSrc = avatar_src ? normalizeAvatarSrc(avatar_src) : DefaultAvatar
 
   return (
@@ -38,6 +39,7 @@ export function Avatar({ avatar_src, size }: AvatarProps) {
         sizes={`${size}px`}
         className="object-cover"
         loading="eager"
+        onError={onError}
       />
     </div>
   )

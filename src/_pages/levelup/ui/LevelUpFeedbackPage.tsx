@@ -1,91 +1,48 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useState } from 'react'
-import { toast } from 'sonner'
-
+import { useOptimisticActiveCardCount } from '@/entities/user'
 import { useAccessToken } from '@/features/auth'
+import { INITIAL_ATTEMPT_DURATION_SECONDS } from '@/features/levelup'
 import {
   deleteAttempt,
   FeedbackLoader,
   FeedbackTab,
-  useCardDetails,
-  useFeedbackPolling,
+  useLevelUpFeedbackController,
 } from '@/features/levelup-feedback'
-import { AlertModal, LevelUpHeader, SubjectHeader } from '@/shared'
-import { Button } from '@/shared/ui/button'
+import { createAttempt } from '@/features/record'
+import { AlertModal, ModeHeader, SubjectHeader, Button } from '@/shared'
+
+const ACTIVE_CARD_COUNT_INCREMENT = 1
 
 export function LevelUpFeedbackPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
   const accessToken = useAccessToken()
-  const [isExitAlertOpen, setIsExitAlertOpen] = useState(false)
-  const cardId = Number(searchParams.get('cardId') ?? '')
-  const attemptId = Number(searchParams.get('attemptId') ?? '')
-  const { data } = useCardDetails(accessToken, cardId)
-
-  const deleteAttemptMutation = useMutation({
-    mutationFn: async () => {
-      if (!accessToken || !cardId || !attemptId) {
-        throw new Error('missing_params')
-      }
-      const result = await deleteAttempt(accessToken, cardId, attemptId)
-      if (!result.ok) {
-        throw new Error('delete_failed')
-      }
-    },
-    retry: 1,
-  })
-
-  const handleTimeout = useCallback(async () => {
-    toast.error('피드백 생성 시간이 초과되었습니다.')
-    try {
-      await deleteAttemptMutation.mutateAsync()
-    } catch {
-      toast.error('삭제에 실패했습니다. 다시 시도해주세요.')
-    }
-    router.push('/main')
-  }, [deleteAttemptMutation, router])
-
-  const handleFailed = useCallback(() => {
-    toast.error('피드백 생성에 실패했습니다. 다시 시도해주세요.')
-  }, [])
-
-  const { status, processingStep, feedbackData } = useFeedbackPolling({
+  const { applyDelta } = useOptimisticActiveCardCount()
+  const {
+    data,
+    status,
+    processingStep,
+    feedbackData,
+    remainingAttempts,
+    isExitAlertOpen,
+    setIsExitAlertOpen,
+    isRestudyDisabled,
+    handleBack,
+    handleRestudyClick,
+    handleEndLearning,
+    handleExitConfirm,
+    handleExitCancel,
+  } = useLevelUpFeedbackController({
     accessToken,
-    cardId,
-    attemptId,
-    onTimeout: handleTimeout,
-    onFailed: handleFailed,
+    createAttempt,
+    deleteAttempt,
+    initialAttemptDurationSeconds: INITIAL_ATTEMPT_DURATION_SECONDS,
+    onIncreaseActiveCardCount: () => applyDelta(ACTIVE_CARD_COUNT_INCREMENT),
   })
-
-  const feedbackAttemptNo = feedbackData[0]?.attemptNo ?? 0
-  const remainingAttempts = feedbackData.length > 0 ? Math.max(0, 5 - feedbackAttemptNo) : 0
-
-  const handleBack = () => {
-    setIsExitAlertOpen(true)
-  }
-
-  const handleExitConfirm = async () => {
-    if (feedbackData.length === 0) {
-      try {
-        await deleteAttemptMutation.mutateAsync()
-      } catch {
-        toast.error('삭제에 실패했습니다. 다시 시도해주세요.')
-        return
-      }
-    }
-    router.push('/main')
-  }
-
-  const handleExitCancel = () => {
-    setIsExitAlertOpen(false)
-  }
   return (
     <div className="flex h-full w-full flex-1 flex-col">
-      <LevelUpHeader
-        variant="feedback"
+      <ModeHeader
+        mode="levelup"
+        step="feedback"
         onBack={handleBack}
         title=""
         progressValue={100}
@@ -111,22 +68,17 @@ export function LevelUpFeedbackPage() {
       </div>
       <div className="mt-auto flex w-full flex-col items-center justify-center gap-4">
         <p className="mb-3 text-sm">남은 학습 횟수: {remainingAttempts}</p>
-        <div className="flex w-full items-center justify-center gap-4 pb-6">
+        <div className="mb-6 flex w-full items-center justify-center gap-4">
           <Button
             variant="levelup_feedback_btn"
-            onClick={() => {
-              if (!cardId) return
-              router.push(`/levelup/record?cardId=${cardId}`)
-            }}
-            disabled={remainingAttempts === 0}
+            onClick={handleRestudyClick}
+            disabled={isRestudyDisabled}
           >
             이어서 학습하기
           </Button>
           <Button
             variant="levelup_feedback_btn"
-            onClick={() => {
-              router.push('/main')
-            }}
+            onClick={handleEndLearning}
           >
             학습 종료하기
           </Button>

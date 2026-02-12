@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     if (refreshToken) {
       res.cookies.set('refresh_token', String(refreshToken), {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SECURE === 'true',
         sameSite: 'lax',
         path: '/',
         maxAge: 3600, // 예시: 14일 (백엔드 만료와 맞추세요)

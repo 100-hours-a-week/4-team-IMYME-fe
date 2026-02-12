@@ -37,7 +37,7 @@ export function CategorySelectList({
   }
 
   return (
-    <div className="itmes-center grid min-h-0 w-full flex-1 grid-cols-2 place-items-center gap-6 overflow-y-auto">
+    <div className="itmes-center grid min-h-0 w-full flex-1 grid-cols-2 place-items-center gap-6 overflow-y-scroll">
       {categories.map((category) => {
         const isSelected = selectedCategoryId === category.id
         const selectedClassName = isSelected ? 'border border-secondary' : ''
@@ -50,7 +50,7 @@ export function CategorySelectList({
               onCategorySelectId(category)
               onClearKeyword()
             }}
-            className={`flex h-40 w-40 items-center justify-center overflow-auto rounded-2xl bg-white ${selectedClassName}`}
+            className={`flex h-40 w-40 cursor-pointer items-center justify-center rounded-2xl bg-white ${selectedClassName}`}
           >
             <p>{category.categoryName}</p>
           </button>

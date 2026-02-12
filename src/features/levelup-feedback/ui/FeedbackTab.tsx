@@ -1,18 +1,23 @@
 'use client'
 
+import { useEffect, useMemo, useState } from 'react'
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared'
-import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from '@/shared/ui/carousel'
+
+import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
 
 type FeedbackTabProps = {
   feedbackData: FeedbackItem[]
   showButtons?: boolean
+  onAttemptNoChange?: (attemptNo: number) => void
 }
 
 const CAROUSEL_CLASSNAME =
@@ -30,20 +35,45 @@ const REVIEW_BOX_CLASSNAME =
   'break-normal min-h-[10vh] w-full rounded-2xl bg-white p-3 whitespace-pre-line text-sm'
 
 const DEFAULT_SHOW_BUTTONS = true
+const COMMENT_CLASSNAME = 'mt-10 text-center'
 
 export function FeedbackTab({
   feedbackData,
   showButtons = DEFAULT_SHOW_BUTTONS,
+  onAttemptNoChange,
 }: FeedbackTabProps) {
+  const sortedFeedbackData = useMemo(
+    () => [...feedbackData].sort((a, b) => b.attemptNo - a.attemptNo),
+    [feedbackData],
+  )
+
+  const [api, setApi] = useState<CarouselApi | null>(null)
+
+  useEffect(() => {
+    if (!api) return
+
+    const emit = () => {
+      const idx = api.selectedScrollSnap()
+      const attemptNo = sortedFeedbackData[idx]?.attemptNo
+      if (attemptNo != null) onAttemptNoChange?.(attemptNo)
+    }
+
+    emit() // 최초 1회
+    api.on('select', emit)
+    return () => {
+      api.off('select', emit)
+    }
+  }, [api, onAttemptNoChange, sortedFeedbackData])
+
   if (feedbackData.length === 0) {
-    return <p>피드백 데이터가 없습니다.</p>
+    return <p className={COMMENT_CLASSNAME}>피드백 데이터가 없습니다.</p>
   }
-
-  const sortedFeedbackData = [...feedbackData].sort((a, b) => b.attemptNo - a.attemptNo)
-
   return (
     <>
-      <Carousel className={CAROUSEL_CLASSNAME}>
+      <Carousel
+        className={CAROUSEL_CLASSNAME}
+        setApi={setApi}
+      >
         <CarouselContent className="flex w-full">
           {sortedFeedbackData.map((feedback) => (
             <CarouselItem

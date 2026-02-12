@@ -98,17 +98,29 @@ jobs:
       - name: Build
         env:
           NEXT_PUBLIC_KAKAO_REST_API_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_REST_API_KEY }}
-          NEXT_PUBLIC_KAKAO_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_KAKAO_REDIRECT_URI }}
-          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
-          NODE_ENV: ${{ secrets.NODE_ENV }}
-          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          NEXT_PUBLIC_KAKAO_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_DEV_KAKAO_REDIRECT_URI }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_DEV_API_BASE_URL }}
+          NEXT_PUBLIC_SECURE: ${{ secrets.NEXT_PUBLIC_DEV_SECURE }}
+          NODE_ENV: ${{ secrets.NODE_DEV_ENV }}
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_DEV_SERVER_URL }}
+          NEXT_PUBLIC_GOOGLE_ANALYTICS: ${{ secrets.NEXT_PUBLIC_DEV_GOOGLE_ANALYTICS }}
+          E2E_BASE_URL: ${{ secrets.E2E_DEV_BASE_URL }}
+          PERF_BASE_URL: ${{ secrets.PERF_DEV_BASE_URL }}
+          ALLOW_E2E_LOGIN: ${{ secrets.ALLOW_DEV_E2E_LOGIN }}
+          NEXT_PUBLIC_PVP_OPEN: ${{ secrets.PVP_DEV_OPEN }}
 
         run: |
           echo "=== Build env check (masked) ==="
           echo "NODE_ENV=$NODE_ENV"
-          echo "NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}"
-          echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}"
-          echo "NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI}"
+          echo "NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL"
+          echo "NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL"
+          echo "NEXT_PUBLIC_SECURE=$NEXT_PUBLIC_SECURE"
+          echo "NEXT_PUBLIC_KAKAO_REDIRECT_URI=$NEXT_PUBLIC_KAKAO_REDIRECT_URI"
+          echo "NEXT_PUBLIC_GOOGLE_ANALYTICS=$NEXT_PUBLIC_GOOGLE_ANALYTICS"
+          echo "E2E_BASE_URL=$E2E_BASE_URL"
+          echo "PERF_BASE_URL=$PERF_BASE_URL"
+          echo "ALLOW_E2E_LOGIN=$ALLOW_E2E_LOGIN"
+          echo "NEXT_PUBLIC_PVP_OPEN=$PVP_OPEN"
 
           pnpm next build
 
@@ -138,6 +150,7 @@ jobs:
         run: |
           mkdir -p deploy
           cp -r .next deploy/
+          cp -r public deploy/ || true
           cp package.json deploy/
           cp pnpm-lock.yaml deploy/
 
@@ -287,6 +300,7 @@ jobs:
 
           # 1. 빌드 아티팩트 복사 (.next, package.json, pnpm-lock.yaml)
           cp -r $APP_DIR/build/.next "$RELEASE_DIR/"
+          cp -r $APP_DIR/build/public "$RELEASE_DIR/"
           cp $APP_DIR/build/package.json "$RELEASE_DIR/"
           cp $APP_DIR/build/pnpm-lock.yaml "$RELEASE_DIR/"
 

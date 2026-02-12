@@ -53,7 +53,7 @@ export function KeywordSelectList({
             key={keyword.id}
             type="button"
             onClick={() => onKeywordSelect(keyword)}
-            className={`flex min-h-10 w-80 items-center justify-center overflow-auto rounded-2xl bg-white ${selectedClassName}`}
+            className={`flex min-h-10 w-80 cursor-pointer items-center justify-center rounded-2xl bg-white ${selectedClassName}`}
           >
             <p>{keyword.keywordName}</p>
           </button>

@@ -156,7 +156,10 @@ export function Card({ title, date, categoryName, keywordName, onClick, onDelete
             <div className={TAG_CLASSNAME}>{categoryName}</div>
             <div className={TAG_CLASSNAME}>{keywordName}</div>
           </div>
-          <ArrowRight className="ml-auto" />
+          <ArrowRight
+            className="ml-auto"
+            size={20}
+          />
         </div>
       </div>
     </div>

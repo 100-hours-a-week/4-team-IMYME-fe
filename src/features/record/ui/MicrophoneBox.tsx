@@ -19,8 +19,8 @@ const WRAPPER_CLASSNAME = 'mt-4 flex w-full flex-col items-center'
 const BOX_CLASSNAME =
   'border-secondary bg-var(--color-background) flex h-90 w-90 flex-col items-center gap-6 rounded-2xl border-2'
 const ERROR_CLASSNAME = 'text-sm text-red-600'
-const MIC_ICON_ACTIVE_CLASSNAME = 'text-primary'
-const MIC_ICON_DISABLED_CLASSNAME = 'text-gray-400'
+const MIC_ICON_ACTIVE_CLASSNAME = 'text-primary cursor-pointer'
+const MIC_ICON_DISABLED_CLASSNAME = 'text-gray-400 cursor-pointer'
 const RECORDING_LABEL_CLASSNAME = 'text-sm text-red-500'
 const PAUSED_LABEL_CLASSNAME = 'text-sm text-red-500'
 const SECONDS_PER_MINUTE = 60

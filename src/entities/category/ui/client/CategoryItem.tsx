@@ -13,7 +13,7 @@ export function CategoryItem({ category, onClick, isSelected = false }: Category
 
   return (
     <div
-      className={`pt-2 ${selectedClassName}`}
+      className={`cursor-pointer pt-2 ${selectedClassName}`}
       onClick={() => onClick(category)}
       role="button"
       tabIndex={0}

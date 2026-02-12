@@ -29,7 +29,8 @@
 .app-shell {
   background-color: #fff;
   height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .app-frame {
@@ -85,8 +86,8 @@
     min-width: 350px;
     min-height: 120px;
     justify-content: space-evenly;
-    margin-top: 10%;
     background-color: #fff;
+    cursor: pointer;
   }
 
   .border-primary {
