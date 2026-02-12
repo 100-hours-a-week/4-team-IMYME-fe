@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
 import type { CategoryItemType } from '@/entities/category'
@@ -32,6 +33,7 @@ export function usePvPMatchingCreateFlow({
   const [isComplete, setIsComplete] = useState(false)
   const [roomName, setRoomName] = useState('')
 
+  const router = useRouter()
   /*
   매칭 상대 10초 대기 후 매칭 완료 상태로 전환
   추후 소켓 적용 시 소켓 상태에 따라 전환 예정
@@ -66,9 +68,10 @@ export function usePvPMatchingCreateFlow({
   }, [isCategoryStep, isComplete, isWaiting])
 
   // 카테고리 단계에서는 선택 여부, 방 이름 단계에서는 입력 여부로 버튼 비활성화
-  const isCreateButtonDisabled = isCategoryStep
-    ? !hasSelectedCategory
-    : roomName.trim().length === 0
+  const isFormInvalid = isCategoryStep ? !hasSelectedCategory : roomName.trim().length === 0
+  // 매칭 대기/완료 상태에서는 버튼을 잠금
+  const isMatchingLocked = createButtonVariant === 'waiting' || createButtonVariant === 'complete'
+  const isCreateButtonDisabled = isFormInvalid || isMatchingLocked
 
   const handleCategorySelect = (category: CategoryItemType) => {
     // 동일 카테고리 재선택 시 해제
@@ -88,6 +91,10 @@ export function usePvPMatchingCreateFlow({
     // 방 생성 요청 → 대기 상태로 전환
     if (!isWaiting) {
       setIsWaiting(true)
+    }
+
+    if (isComplete) {
+      router.replace('/pvp/matching/1')
     }
   }
 
