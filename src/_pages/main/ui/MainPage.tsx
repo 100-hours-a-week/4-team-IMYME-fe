@@ -25,7 +25,7 @@ export function MainPage() {
   }, [accessToken, myProfile, profile.id, setProfile])
 
   return (
-    <div className="flex h-full w-full flex-col pb-6">
+    <div className="flex w-full flex-1 flex-col pb-6">
       <ProfileDashboard />
       <div className="mt-10 flex flex-col gap-6 pb-5">
         <ModeButton variant="levelup" />
