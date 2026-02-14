@@ -19,7 +19,7 @@ const LABEL_BY_VARIANT: Record<RoomCreateButtonVariant, string> = {
   complete: '곧 대결이 시작됩니다.',
 }
 
-const WRAPPER_CLASSNAME = 'mt-auto mb-4 flex w-full justify-center pb-6'
+const WRAPPER_CLASSNAME = 'mt-auto flex w-full justify-center pb-6'
 const BUTTON_CLASSNAME = 'bg-secondary h-10 w-87.5 max-w-87.5'
 
 export function RoomCreateButton({ variant, disabled, onClick }: RoomCreateButtonProps) {

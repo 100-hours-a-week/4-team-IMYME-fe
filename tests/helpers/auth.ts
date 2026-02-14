@@ -1,6 +1,6 @@
-import { createUuidForRegex } from '@/shared'
-
 import type { Page } from '@playwright/test'
+
+import { createUuidForRegex } from '@/shared/lib/createUuidForRegex'
 
 const E2E_LOGIN_PATH = '/api/e2e/login'
 const DEFAULT_E2E_BASE_URL = 'http://localhost:3000'
