@@ -15,7 +15,7 @@ export function PvPRoomCreatePage() {
   } = usePvPRoomCreateExitGuard()
 
   return (
-    <div className="flex h-full w-full flex-col">
+    <div className="flex w-full flex-1 flex-col">
       <ModeHeader
         mode="pvp"
         step="matching_create"
