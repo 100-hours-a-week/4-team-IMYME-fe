@@ -19,9 +19,10 @@ const clearRefreshTokenCookie = (res: NextResponse) => {
 
 export async function POST(req: Request) {
   const refreshToken = (await cookies()).get('refresh_token')?.value
+  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || req.url
 
   if (!refreshToken) {
-    const res = NextResponse.redirect(new URL('/login', req.url))
+    const res = NextResponse.redirect(new URL('/login', baseUrl))
     clearRefreshTokenCookie(res)
     return res
   }
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
     const nextRefreshToken = response.data?.data?.refreshToken
 
     if (!accessToken) {
-      const res = NextResponse.redirect(new URL('/login', req.url))
+      const res = NextResponse.redirect(new URL('/login', baseUrl))
       clearRefreshTokenCookie(res)
       return res
     }
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
       const data = err.response?.data
       console.error('[token refresh error]', status, data)
     }
-    const res = NextResponse.redirect(new URL('/login', req.url))
+    const res = NextResponse.redirect(new URL('/login', baseUrl))
     clearRefreshTokenCookie(res)
     return res
   }
