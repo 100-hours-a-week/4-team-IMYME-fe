@@ -8,8 +8,14 @@ if [ "$ENV" != "dev" ] && [ "$ENV" != "prod" ] && [ "$ENV" != "release" ]; then
   exit 1
 fi
 
-# .env 파일이 있으면 로드
-if [ -f .env ]; then
+# 환경별 .env 파일 로드
+ENV_FILE=".env.$ENV"
+if [ -f "$ENV_FILE" ]; then
+  echo "📝 Loading $ENV_FILE file..."
+  set -a
+  source "$ENV_FILE"
+  set +a
+elif [ -f .env ]; then
   echo "📝 Loading .env file..."
   set -a
   source .env
