@@ -29,4 +29,6 @@ ENV NEXT_PUBLIC_GOOGLE_ANALYTICS=${NEXT_PUBLIC_GOOGLE_ANALYTICS}
 RUN pnpm run build
 
 EXPOSE 3000
-CMD ["pnpm", "start", "--", "-H", "0.0.0.0"]
+ENV HOSTNAME="0.0.0.0"
+ENV PORT=3000
+CMD ["pnpm", "start"]
