@@ -6,16 +6,14 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# Copy source code
-COPY . .
-
-# Build arguments for Next.js build
+# Build arguments for Next.js build (before COPY to bust cache when env changes)
 ARG NEXT_PUBLIC_API_BASE_URL
 ARG NEXT_PUBLIC_SERVER_URL
 ARG NEXT_PUBLIC_KAKAO_REDIRECT_URI
 ARG NEXT_PUBLIC_KAKAO_REST_API_KEY
 ARG NEXT_PUBLIC_SECURE
 ARG NEXT_PUBLIC_GOOGLE_ANALYTICS
+ARG CACHE_BUST
 
 # Set environment variables for build
 ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
@@ -24,6 +22,9 @@ ENV NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI}
 ENV NEXT_PUBLIC_KAKAO_REST_API_KEY=${NEXT_PUBLIC_KAKAO_REST_API_KEY}
 ENV NEXT_PUBLIC_SECURE=${NEXT_PUBLIC_SECURE}
 ENV NEXT_PUBLIC_GOOGLE_ANALYTICS=${NEXT_PUBLIC_GOOGLE_ANALYTICS}
+
+# Copy source code
+COPY . .
 
 # Build application
 RUN pnpm run build
