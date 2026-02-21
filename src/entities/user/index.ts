@@ -13,4 +13,5 @@ export {
 export { getMyProfile } from './api/getMyProfile'
 export { useOptimisticActiveCardCount } from './model/useOptimisticActiveCardCount'
 export { useMyProfileQuery } from './model/useMyProfileQuery'
+export { useSyncMyProfile } from './model/useSyncMyProfile'
 export type { UserProfile } from './model/userProfile'
