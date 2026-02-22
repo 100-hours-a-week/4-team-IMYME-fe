@@ -5,7 +5,14 @@ import { ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 
-import { Avatar, Nickname, StatCards, useProfile, type UserProfile } from '@/entities/user'
+import {
+  Avatar,
+  Nickname,
+  StatCards,
+  useMyProfileQuery,
+  useProfile,
+  useSyncMyProfile,
+} from '@/entities/user'
 import { useAccessToken } from '@/features/auth'
 
 const AVATAR_SIZE_PX = 60
@@ -35,13 +42,11 @@ const isS3PresignedUrl = (src: string) => {
 }
 
 interface ProfileDashboardProps {
-  profile?: UserProfile
   navigateToMyPage?: boolean
   showBackButton?: boolean
 }
 
 export function ProfileDashboard({
-  profile: profileProp,
   navigateToMyPage = true,
   showBackButton = false,
 }: ProfileDashboardProps) {
@@ -49,10 +54,12 @@ export function ProfileDashboard({
   const router = useRouter()
   const queryClient = useQueryClient()
   const accessToken = useAccessToken()
+  const profile = useProfile()
+  const { data: myProfile } = useMyProfileQuery(accessToken, { enabled: Boolean(accessToken) })
+  useSyncMyProfile({ accessToken, myProfile })
 
-  // props가 없으면 store 프로필을 fallback으로 사용
-  const storeProfile = useProfile()
-  const profile = profileProp ?? storeProfile
+  // ✅ 렌더는 myProfile 우선 사용 (store 채우기 기다리지 않음)
+  const uiProfile = myProfile ?? profile
 
   // ✅ 무한 루프 방지: 같은 렌더 사이클에서 계속 에러 나면 invalidate 반복될 수 있음
   const retriedRef = useRef(false)
@@ -113,18 +120,18 @@ export function ProfileDashboard({
             style={{ width: AVATAR_SIZE_PX, height: AVATAR_SIZE_PX }}
           >
             <Avatar
-              avatar_src={profile.profileImageUrl}
+              avatar_src={uiProfile.profileImageUrl}
               size={AVATAR_SIZE_PX}
               onError={handleAvatarError} // ✅ 상위에서 처리
             />
           </div>
-          <Nickname nickname={isProfileReady ? profile.nickname : FALLBACK_NICKNAME} />
+          <Nickname nickname={isProfileReady ? uiProfile.nickname : FALLBACK_NICKNAME} />
         </div>
 
         <StatCards
-          cardCount={isProfileReady ? profile.activeCardCount : FALLBACK_STAT_VALUE}
-          winCount={isProfileReady ? profile.winCount : FALLBACK_STAT_VALUE}
-          levelCount={isProfileReady ? profile.level : FALLBACK_STAT_VALUE}
+          cardCount={isProfileReady ? uiProfile.activeCardCount : FALLBACK_STAT_VALUE}
+          winCount={isProfileReady ? uiProfile.winCount : FALLBACK_STAT_VALUE}
+          levelCount={isProfileReady ? uiProfile.level : FALLBACK_STAT_VALUE}
         />
       </div>
     </div>
