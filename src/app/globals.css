@@ -18,6 +18,10 @@
 }
 
 @layer base {
+  html {
+    height: 100%;
+  }
+
   body {
     background-color: rgb(var(--color-background));
     color: rgb(var(--color-foreground));
@@ -28,18 +32,23 @@
 
 .app-shell {
   background-color: #fff;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-frame {
   background-color: rgb(var(--color-background));
   margin: 0 auto;
-  min-height: 100dvh;
+  min-height: 100%;
   width: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 @media (min-width: 640px) {

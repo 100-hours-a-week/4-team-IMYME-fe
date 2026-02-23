@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { httpClient } from '@/shared'
 
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080'
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://dev.imymemine.kr/server'
 
 // ✅ middleware(proxy.ts)에서 확인하는 쿠키 이름과 반드시 동일
 const REFRESH_TOKEN_COOKIE = 'refresh_token'

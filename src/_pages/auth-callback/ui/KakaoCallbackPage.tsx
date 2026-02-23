@@ -45,11 +45,15 @@ export function KakaoCallbackPage() {
         return
       }
 
+      const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI ?? ''
+
+      console.log(redirectUri)
+
       // ✅ 2) 동일 출처 API로 교환 (URL에 토큰 싣지 않음)
       const res = await fetch(buildServerUrl(KAKAO_EXCHANGE_PATH), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, deviceUuid }),
+        body: JSON.stringify({ code, deviceUuid, redirectUri }),
       })
 
       if (!res.ok) {
