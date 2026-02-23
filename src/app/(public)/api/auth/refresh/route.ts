@@ -17,11 +17,11 @@ const clearRefreshTokenCookie = (res: NextResponse) => {
   })
 }
 
-export async function POST(req: Request) {
+export async function POST() {
   const refreshToken = (await cookies()).get('refresh_token')?.value
 
   if (!refreshToken) {
-    const res = NextResponse.redirect(new URL('/login', req.url))
+    const res = NextResponse.json({ error: 'no_refresh_token' }, { status: 401 })
     clearRefreshTokenCookie(res)
     return res
   }
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const nextRefreshToken = response.data?.data?.refreshToken
 
     if (!accessToken) {
-      const res = NextResponse.redirect(new URL('/login', req.url))
+      const res = NextResponse.json({ error: 'no_access_token' }, { status: 401 })
       clearRefreshTokenCookie(res)
       return res
     }
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       const data = err.response?.data
       console.error('[token refresh error]', status, data)
     }
-    const res = NextResponse.redirect(new URL('/login', req.url))
+    const res = NextResponse.json({ error: 'refresh_failed' }, { status: 401 })
     clearRefreshTokenCookie(res)
     return res
   }
