@@ -6,6 +6,7 @@ import { Button } from './button'
 
 const RECENT_LIST_LABELS = {
   levelup: '최근 학습',
+  pvp: '최근 대결',
 } as const
 
 type RecentListVariant = keyof typeof RECENT_LIST_LABELS
@@ -20,7 +21,7 @@ export function RecentListHeader({ variant }: RecentListHeaderProps) {
   const router = useRouter()
 
   const handleSeeMore = () => {
-    router.push('/mypage')
+    router.replace('/mypage')
   }
 
   return (

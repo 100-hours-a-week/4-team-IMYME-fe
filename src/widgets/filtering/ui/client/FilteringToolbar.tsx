@@ -11,6 +11,7 @@ import type { CategoryItemType } from '@/entities/category'
 import type { KeywordItemType } from '@/entities/keyword'
 
 type FilteringToolbarProps = {
+  variant?: 'category' | 'keyword'
   selectedCategory: CategoryItemType | null
   selectedKeyword: KeywordItemType | null
   onApply: (selection: {
@@ -21,6 +22,7 @@ type FilteringToolbarProps = {
 }
 
 export function FilteringToolbar({
+  variant = 'keyword',
   selectedCategory,
   selectedKeyword,
   onApply,
@@ -52,6 +54,7 @@ export function FilteringToolbar({
           <p className="cursor-pointer text-sm">필터</p>
         </DrawerTrigger>
         <FilteringTab
+          variant={variant}
           onApply={handleApply}
           onClose={() => setIsFilterOpen(false)}
         />

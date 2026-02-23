@@ -4,17 +4,22 @@ import { useState } from 'react'
 
 import { CategoryItemType } from '@/entities/category'
 import { KeywordItemType } from '@/entities/keyword'
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { CategoryList, KeywordList, useCategoryList, useKeywordList } from '@/features/filtering'
-import { FilteringCondition } from '@/features/filtering'
-import { Button } from '@/shared/ui/button'
+import { useAccessToken } from '@/features/auth'
+import {
+  CategoryList,
+  KeywordList,
+  useCategoryList,
+  useKeywordList,
+  FilteringCondition,
+} from '@/features/filtering'
 import {
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/shared/ui/drawer'
+  Button,
+} from '@/shared'
 
 type FilteringSelection = {
   category: CategoryItemType | null
@@ -22,11 +27,12 @@ type FilteringSelection = {
 }
 
 type FilteringTabProps = {
+  variant?: 'category' | 'keyword'
   onApply?: (selection: FilteringSelection) => void
   onClose?: () => void
 }
 
-export function FilteringTab({ onApply, onClose }: FilteringTabProps) {
+export function FilteringTab({ variant = 'keyword', onApply, onClose }: FilteringTabProps) {
   const accessToken = useAccessToken()
   const {
     data: categoryData = [],
@@ -43,10 +49,19 @@ export function FilteringTab({ onApply, onClose }: FilteringTabProps) {
     categoryId: selectedCategory?.id ?? null,
     accessToken,
   })
+  const isCategoryOnly = variant === 'category'
 
   const handleCategoryClick = (category: CategoryItemType) => {
     setSelectedCategory(category)
     if (selectedKeyword) setSelectedKeyword(null)
+
+    if (isCategoryOnly && onApply) {
+      onApply({
+        category,
+        keyword: null,
+      })
+      if (onClose) onClose()
+    }
   }
   const handleKeywordClick = (keyword: KeywordItemType) => {
     setSelectedKeyword(keyword)
@@ -55,6 +70,14 @@ export function FilteringTab({ onApply, onClose }: FilteringTabProps) {
   const handleInitButtonClick = () => {
     if (selectedCategory) setSelectedCategory(null)
     if (selectedKeyword) setSelectedKeyword(null)
+
+    if (onApply) {
+      onApply({
+        category: null,
+        keyword: null,
+      })
+    }
+    if (onClose) onClose()
   }
 
   const handleApplyClick = () => {
@@ -79,8 +102,8 @@ export function FilteringTab({ onApply, onClose }: FilteringTabProps) {
         />
       </DrawerHeader>
       <div className="bg-secondary mt-0 mb-0 h-0.5 w-full"></div>
-      <div className="flex min-h-0 pb-0">
-        <div className="min-h-0">
+      <div className={isCategoryOnly ? 'flex min-h-0 justify-center pb-0' : 'flex min-h-0 pb-0'}>
+        <div className={isCategoryOnly ? 'min-h-0 w-full text-center' : 'min-h-0'}>
           <CategoryList
             isLoading={categoryLoading}
             error={categoryError}
@@ -89,22 +112,26 @@ export function FilteringTab({ onApply, onClose }: FilteringTabProps) {
             selectedCategoryId={selectedCategory ? selectedCategory.id : null}
           />
         </div>
-        <div className="bg-secondary min-h-full w-0.5"></div>
-        <div className="flex min-h-0 flex-1">
-          {keywordData.length > 0 ? (
-            <KeywordList
-              isLoading={keywordLoading}
-              error={keywordError}
-              keywords={keywordData}
-              onKeywordClick={handleKeywordClick}
-              selectedKeywordId={selectedKeyword ? selectedKeyword.id : null}
-            />
-          ) : (
-            <div className="pt-2">
-              <p className="text-md ml-4 font-semibold">카테고리를 선택해 주세요.</p>
+        {isCategoryOnly ? null : (
+          <>
+            <div className="bg-secondary min-h-full w-0.5"></div>
+            <div className="flex min-h-0 flex-1">
+              {keywordData.length > 0 ? (
+                <KeywordList
+                  isLoading={keywordLoading}
+                  error={keywordError}
+                  keywords={keywordData}
+                  onKeywordClick={handleKeywordClick}
+                  selectedKeywordId={selectedKeyword ? selectedKeyword.id : null}
+                />
+              ) : (
+                <div className="pt-2">
+                  <p className="text-md ml-4 font-semibold">카테고리를 선택해 주세요.</p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
       <DrawerFooter className="mt-auto flex items-center">
         <Button

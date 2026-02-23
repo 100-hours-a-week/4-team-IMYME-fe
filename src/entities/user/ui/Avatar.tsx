@@ -5,6 +5,7 @@ import { DefaultAvatar } from '@/shared'
 interface AvatarProps {
   avatar_src: string
   size: number
+  onError?: () => void
 }
 
 const KAKAO_CDN_HTTP_PREFIX = 'http://k.kakaocdn.net'
@@ -22,22 +23,24 @@ const normalizeAvatarSrc = (src: string) => {
   return src
 }
 
-export function Avatar({ avatar_src, size }: AvatarProps) {
+export function Avatar({ avatar_src, size, onError }: AvatarProps) {
+  const isFallback = !avatar_src
   const resolvedSrc = avatar_src ? normalizeAvatarSrc(avatar_src) : DefaultAvatar
 
   return (
     <div
       style={{ width: size, height: size }}
-      className="relative overflow-hidden rounded-full"
+      className="relative flex items-center justify-center overflow-hidden rounded-full"
     >
       <Image
-        unoptimized
         src={resolvedSrc}
         alt="profile image"
-        fill
-        sizes={`${size}px`}
-        className="object-cover"
+        width={size}
+        height={size}
+        className="h-full w-full object-cover object-center"
         loading="eager"
+        onError={onError}
+        fetchPriority={isFallback ? 'auto' : 'high'}
       />
     </div>
   )

@@ -3,6 +3,7 @@
     "@commitlint/cli": "^20.3.1",
     "@commitlint/config-conventional": "^20.3.1",
     "@eslint/eslintrc": "^3.3.3",
+    "@playwright/test": "^1.58.2",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/git": "^10.0.1",
@@ -23,25 +24,44 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "get-port": "^7.1.0",
     "globals": "^17.0.0",
     "husky": "^9.1.7",
+    "lighthouse": "^13.0.2",
     "lint-staged": "^16.2.7",
+    "playwright-lighthouse": "^4.0.0",
     "prettier": "^3.8.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "semantic-release": "^25.0.2"
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
     "start": "next start",
     "prepare": "husky",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "test": "echo \"(add tests)\""
+    "test": "echo \"(add tests)\"",
+    "build": "next build",
+    "test:e2e": "pnpm exec playwright test -c playwright.e2e.config.ts",
+    "test:e2e:ui": "pnpm exec playwright test -c playwright.e2e.config.ts --ui",
+    "test:e2e:debug": "pnpm exec playwright test -c playwright.e2e.config.ts --debug",
+    "test:perf": "pnpm exec playwright test -c playwright.perf.config.ts"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      "last 2 Chrome versions",
+      "last 2 Edge versions",
+      "last 2 Safari versions"
+    ],
+    "development": [
+      "last 1 Chrome version",
+      "last 1 Edge version",
+      "last 1 Safari version"
     ]
   },
   "dependencies": {

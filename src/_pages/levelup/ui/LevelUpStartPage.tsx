@@ -9,9 +9,10 @@ import {
   CategorySelectList,
   KeywordSelectList,
   createCard,
+  INITIAL_ATTEMPT_DURATION_SECONDS,
 } from '@/features/levelup'
 import { createAttempt } from '@/features/record'
-import { LevelUpHeader } from '@/shared'
+import { ModeHeader } from '@/shared'
 
 import type { KeywordItemType } from '@/entities/keyword'
 
@@ -19,7 +20,6 @@ const STEP_ONE_PROGRESS_VALUE = 33
 const STEP_TWO_PROGRESS_VALUE = 66
 const STEP_ONE_LABEL = '1/3'
 const STEP_TWO_LABEL = '2/3'
-const INITIAL_ATTEMPT_DURATION_SECONDS = 0
 
 export function LevelUpStartPage() {
   const router = useRouter()
@@ -82,8 +82,9 @@ export function LevelUpStartPage() {
 
   return (
     <div className="h-full w-full">
-      <LevelUpHeader
-        variant={hasSelectedCategory ? 'keyword' : 'category'}
+      <ModeHeader
+        mode="levelup"
+        step={hasSelectedCategory ? 'keyword' : 'category'}
         onBack={handleBack}
         progressValue={progressValue}
         stepLabel={progressLabel}

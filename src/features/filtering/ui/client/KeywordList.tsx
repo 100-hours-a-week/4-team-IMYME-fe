@@ -1,5 +1,7 @@
+'use client'
+
 import { KeywordItemType } from '@/entities/keyword'
-import { KeywordItem } from '@/entities/keyword/ui/KeywordItem'
+import { KeywordItem } from '@/entities/keyword'
 
 type KeywordListProps = {
   isLoading: boolean
