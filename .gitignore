@@ -109,3 +109,5 @@ test-results/
 lighthouse/
 perf-results/
 artifacts/har/
+build.sh
+docker-compose.local.yml
