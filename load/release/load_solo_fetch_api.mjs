@@ -10,7 +10,7 @@ const AUDIO_FILE =
   '/Users/wonhyeonseob/Desktop/git/MINE/fe/4-team-IMYME-fe/load/release/assets/sample_speech.webm'
 const AUDIO_CONTENT_TYPE = 'audio/webm'
 const POLL_INTERVAL_MS = Number(process.env.POLL_INTERVAL_MS ?? '2000')
-const FEEDBACK_TIMEOUT_MS = Number(process.env.FEEDBACK_TIMEOUT_MS ?? '180000')
+const FEEDBACK_TIMEOUT_MS = Number(process.env.FEEDBACK_TIMEOUT_MS ?? '600000')
 const TERMINAL_STATUSES = new Set(['COMPLETED', 'FAILED', 'EXPIRED'])
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -136,6 +136,21 @@ async function waitForTerminalStatus(accessToken, { cardId, attemptId }) {
   throw new Error('Timeout waiting for terminal status')
 }
 
+async function warmupServerless(accessToken) {
+  const response = await fetch(new URL('/server/learning/warmup', BASE_URL).toString(), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  if (!response.ok) {
+    console.warn(`Warmup failed: ${response.status} (non-fatal)`)
+    return false
+  }
+  return true
+}
+
 async function runSingleFlow(index) {
   const startTime = Date.now()
   const deviceUuid = randomUUID()
@@ -143,7 +158,7 @@ async function runSingleFlow(index) {
 
   try {
     // 1. Login (VU별 다른 유저)
-    const vuId = index + 1 // 1부터 시작
+    const vuId = 10000 + index + 1 // 기존 유저와 충돌 방지 (10001부터 시작)
     const { accessToken } = await e2eLogin(deviceUuid, vuId)
 
     // 2. Get categories & keywords
@@ -153,7 +168,7 @@ async function runSingleFlow(index) {
     const keyword = keywords[0]
 
     // 3. Create card
-    const cardTitle = `load${Date.now()}-${index}`
+    const cardTitle = `t${Date.now() % 100000}-${index}`
     const { cardId } = await createCard(accessToken, {
       categoryId: category.id,
       keywordId: keyword.id,
@@ -183,12 +198,28 @@ async function runSingleFlow(index) {
 }
 
 async function main() {
+  const testStartTime = new Date()
   console.log(`[LOAD TEST] Starting...`)
+  console.log(`- START TIME: ${testStartTime.toISOString()}`)
   console.log(`- BASE_URL: ${BASE_URL}`)
   console.log(`- CONCURRENCY: ${CONCURRENCY}`)
   console.log(`- ITERATIONS: ${ITERATIONS}`)
   console.log(`- AUDIO_FILE: ${AUDIO_FILE}`)
   console.log(`- E2E_LOGIN_PATH: ${E2E_LOGIN_PATH}`)
+  console.log('')
+
+  // Warmup: 먼저 로그인 후 RunPod Serverless 깨우기
+  console.log('[WARMUP] Warming up RunPod Serverless...')
+  const warmupDeviceUuid = randomUUID()
+  const { accessToken: warmupToken } = await e2eLogin(warmupDeviceUuid, 9999)
+  const warmupOk = await warmupServerless(warmupToken)
+  if (warmupOk) {
+    console.log('[WARMUP] RunPod Serverless warmup successful')
+    // 워밍업 후 잠시 대기 (서버리스가 완전히 준비될 시간)
+    await sleep(5000)
+  } else {
+    console.log('[WARMUP] RunPod Serverless warmup failed, continuing anyway...')
+  }
   console.log('')
 
   const results = []
@@ -210,12 +241,15 @@ async function main() {
   }
 
   const totalDuration = Date.now() - startTime
+  const testEndTime = new Date()
   const successResults = results.filter((r) => r.ok)
   const failedResults = results.filter((r) => !r.ok)
   const completedResults = results.filter((r) => r.status === 'COMPLETED')
 
   console.log('')
   console.log('=== LOAD TEST RESULTS ===')
+  console.log(`Start Time: ${testStartTime.toISOString()}`)
+  console.log(`End Time: ${testEndTime.toISOString()}`)
   console.log(`Total: ${results.length}`)
   console.log(`Success: ${successResults.length}`)
   console.log(`Failed: ${failedResults.length}`)
