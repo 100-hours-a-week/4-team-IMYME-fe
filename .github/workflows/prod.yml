@@ -110,7 +110,6 @@ jobs:
           ALLOW_E2E_LOGIN: ${{ secrets.ALLOW_PROD_E2E_LOGIN }}
           NEXT_PUBLIC_PVP_OPEN: ${{ secrets.PVP_PROD_OPEN }}
           NEXT_PUBLIC_CHALLENGE_OPEN: ${{ secrets.CHALLENGE_PROD_OPEN }}
-          NEXT_PUBLIC_ENABLE_FCM: ${{ secrets.NEXT_PUBLIC_PROD_ENABLE_FCM }}
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
           NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
@@ -119,6 +118,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
           NEXT_PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_VAPID_KEY }}
           NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+          NEXT_PUBLIC_ENABLE_FCM: ${{ secrets.NEXT_PUBLIC_ENABLE_FCM }}
         run: pnpm next build
 
   image-push:
@@ -158,7 +158,6 @@ jobs:
             NEXT_PUBLIC_SERVER_URL=${{ secrets.NEXT_PUBLIC_PROD_SERVER_URL }}
             NEXT_PUBLIC_PVP_OPEN=${{ secrets.PVP_PROD_OPEN }}
             NEXT_PUBLIC_CHALLENGE_OPEN=${{ secrets.CHALLENGE_PROD_OPEN }}
-            NEXT_PUBLIC_ENABLE_FCM=${{ secrets.NEXT_PUBLIC_PROD_ENABLE_FCM }}
             NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
             NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
             NEXT_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
@@ -167,6 +166,7 @@ jobs:
             NEXT_PUBLIC_FIREBASE_APP_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
             NEXT_PUBLIC_FIREBASE_VAPID_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_VAPID_KEY }}
             NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+            NEXT_PUBLIC_ENABLE_FCM=${{ secrets.NEXT_PUBLIC_ENABLE_FCM }}
           tags: |
             219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:${{ github.sha }}
             219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:prod-latest
