@@ -1,9 +1,18 @@
 import { proxyApiClient } from '@/shared/api'
 
+export type ChallengeFeedback = {
+  facts?: string
+  summary?: string
+  keywords?: string[]
+  understanding?: string
+  personalized_feedback?: string
+}
+
 export type MyChallengeResultSummary = {
+  attemptId?: number
   score: number
-  level: number
-  isWinner: boolean
+  rank?: number
+  feedback?: ChallengeFeedback
 }
 
 export type MyChallengeResultData = {

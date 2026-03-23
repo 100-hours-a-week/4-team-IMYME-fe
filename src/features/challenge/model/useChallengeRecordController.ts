@@ -31,13 +31,12 @@ type UseChallengeRecordControllerResult = {
 
 type UseChallengeRecordControllerParams = {
   challengeId: number | null
+  challengeEndAt: string | null
 }
 
 const MINIMUM_SUBMIT_DURATION_SECONDS = 1
 const TOO_SHORT_RECORDING_ERROR_MESSAGE = '1초 이상 녹음한 뒤 제출해주세요.'
 const MS_PER_SECOND = 1_000
-const CHALLENGE_CLOSE_HOUR = 22
-const CHALLENGE_CLOSE_MINUTE = 10
 const AUTO_SUBMIT_DELAY_MS = 0
 const CREATE_CHALLENGE_ATTEMPT_ERROR_MESSAGE =
   '챌린지 제출 생성에 실패했습니다. 잠시 후 다시 시도해주세요.'
@@ -46,14 +45,24 @@ const UPLOAD_CHALLENGE_ATTEMPT_AUDIO_ERROR_MESSAGE =
 const COMPLETE_CHALLENGE_ATTEMPT_UPLOAD_ERROR_MESSAGE =
   '챌린지 업로드 완료 처리에 실패했습니다. 잠시 후 다시 시도해주세요.'
 
-const getChallengeCloseTimeMs = (now: Date) => {
-  const challengeCloseDate = new Date(now)
-  challengeCloseDate.setHours(CHALLENGE_CLOSE_HOUR, CHALLENGE_CLOSE_MINUTE, 0, 0)
-  return challengeCloseDate.getTime()
+const getChallengeCloseTimeMs = (challengeEndAt: string | null): number | null => {
+  if (!challengeEndAt) {
+    return null
+  }
+
+  const challengeCloseDate = new Date(challengeEndAt)
+  const challengeCloseTimeMs = challengeCloseDate.getTime()
+
+  if (!Number.isFinite(challengeCloseTimeMs)) {
+    return null
+  }
+
+  return challengeCloseTimeMs
 }
 
 export function useChallengeRecordController({
   challengeId,
+  challengeEndAt,
 }: UseChallengeRecordControllerParams): UseChallengeRecordControllerResult {
   const {
     isMicAlertOpen,
@@ -93,12 +102,14 @@ export function useChallengeRecordController({
     }
   }, [isRecording])
 
-  // 챌린지 마감 시각(22:10)에 도달하면 녹음을 자동으로 종료한다.
+  // 챌린지 마감 시각(endAt)에 도달하면 녹음을 자동으로 종료한다.
   useEffect(() => {
     if (!isRecording) return
 
     const now = new Date()
-    const challengeCloseTimeMs = getChallengeCloseTimeMs(now)
+    const challengeCloseTimeMs = getChallengeCloseTimeMs(challengeEndAt)
+    if (!challengeCloseTimeMs) return
+
     const msUntilChallengeClose = challengeCloseTimeMs - now.getTime()
 
     const stopRecordingAtChallengeClose = async () => {
@@ -123,7 +134,7 @@ export function useChallengeRecordController({
     return () => {
       window.clearTimeout(stopTimerId)
     }
-  }, [isRecording, stopRecordingAndGetBlob])
+  }, [challengeEndAt, isRecording, stopRecordingAndGetBlob])
 
   const handleMicClick = useCallback(async () => {
     if (isRecording) return

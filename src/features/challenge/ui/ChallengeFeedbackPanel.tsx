@@ -13,10 +13,10 @@ const COMPARE_FEEDBACK_LABEL = '랭커와의 비교 피드백'
 
 type ChallengeFeedback = {
   summary?: string
-  keywords?: string
+  keywords?: string[]
   facts?: string
   understanding?: string
-  comparisonFeedback?: string
+  personalized_feedback?: string
 }
 
 type ChallengeFeedbackPanelProps = {
@@ -42,7 +42,9 @@ export function ChallengeFeedbackPanel({ feedback }: ChallengeFeedbackPanelProps
           <div className={TAB_CONTENT_CLASSNAME}>{readFeedbackText(feedback?.summary)}</div>
         </TabsContent>
         <TabsContent value="keywords">
-          <div className={TAB_CONTENT_CLASSNAME}>{readFeedbackText(feedback?.keywords)}</div>
+          <div className={TAB_CONTENT_CLASSNAME}>
+            {readFeedbackText(feedback?.keywords?.join(', '))}
+          </div>
         </TabsContent>
         <TabsContent value="facts">
           <div className={TAB_CONTENT_CLASSNAME}>{readFeedbackText(feedback?.facts)}</div>
@@ -54,7 +56,7 @@ export function ChallengeFeedbackPanel({ feedback }: ChallengeFeedbackPanelProps
       <div className={COMPARE_FEEDBACK_WRAPPER_CLASSNAME}>
         <p className="text-start text-sm font-semibold">{COMPARE_FEEDBACK_LABEL}</p>
         <div className={COMPARE_FEEDBACK_CONTENT_CLASSNAME}>
-          {readFeedbackText(feedback?.comparisonFeedback)}
+          {readFeedbackText(feedback?.personalized_feedback)}
         </div>
       </div>
     </div>

@@ -29,6 +29,8 @@ export function ChallengeRankingItem({
           <Image
             src={profileImageUrl}
             alt={`${nickname} profile`}
+            width={32}
+            height={32}
             className={PROFILE_IMAGE_CLASSNAME}
           />
         ) : (

@@ -13,10 +13,10 @@ import { useLatestChallengeRanking, useMyChallengeResult } from '@/features/chal
 
 type ChallengeFeedback = {
   summary?: string
-  keywords?: string
+  keywords?: string[]
   facts?: string
   understanding?: string
-  comparisonFeedback?: string
+  personalized_feedback?: string
 }
 
 const MOSAIC_BACKGROUND_STYLE = {
@@ -45,19 +45,19 @@ const getChallengeFeedbackFromResult = (
   if (!myResult) {
     return {
       summary,
-      keywords: challengeResult.keywordName,
+      keywords: [challengeResult.keywordName],
       facts: FEEDBACK_NO_RESULT_MESSAGE,
       understanding: challengeResult.status,
-      comparisonFeedback: FEEDBACK_NO_RESULT_MESSAGE,
+      personalized_feedback: FEEDBACK_NO_RESULT_MESSAGE,
     }
   }
 
   return {
     summary,
-    keywords: challengeResult.keywordName,
-    facts: `점수 ${myResult.score}점 · 레벨 ${myResult.level}`,
-    understanding: myResult.isWinner ? '오늘 챌린지 승리입니다.' : '오늘 챌린지는 패배입니다.',
-    comparisonFeedback: `랭킹 결과 상태: ${challengeResult.status}`,
+    keywords: [challengeResult.keywordName],
+    facts: `점수 ${myResult.score}점`,
+    understanding: '',
+    personalized_feedback: `랭킹 결과 상태: ${challengeResult.status}`,
   }
 }
 
