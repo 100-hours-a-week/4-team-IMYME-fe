@@ -1,5 +1,5 @@
 const DASHBOARD_CARD_CLASSNAME =
-  'w-[103px] h-[115px] bg-primary text-white flex flex-col items-center justify-center gap-3 rounded-xl'
+  'glass-card w-[103px] h-[115px] text-white flex flex-col items-center justify-center gap-3 rounded-xl'
 const DASHBOARD_INFO_HEADING_CLASSNAME = 'text-2xl font-medium'
 const DASHBOARD_INFO_BASE_CLASSNAME = 'text-base'
 

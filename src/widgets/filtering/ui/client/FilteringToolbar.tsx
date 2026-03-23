@@ -1,11 +1,13 @@
 'use client'
 
 import { SlidersVertical } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
 import { FilteringCondition } from '@/features/filtering'
 import { Drawer, DrawerTrigger } from '@/shared/ui/drawer'
-import { FilteringTab } from '@/widgets/filtering'
+
+import { FilteringTab } from './FilteringTab'
 
 import type { CategoryItemType } from '@/entities/category'
 import type { KeywordItemType } from '@/entities/keyword'
@@ -19,7 +21,16 @@ type FilteringToolbarProps = {
     keyword: KeywordItemType | null
   }) => void
   showResetButton?: boolean
+  lazyLoadFilteringTab?: boolean
 }
+
+const FilteringTabLazy = dynamic(
+  () => import('./FilteringTab').then((module) => module.FilteringTab),
+  {
+    ssr: false,
+    loading: () => null,
+  },
+)
 
 export function FilteringToolbar({
   variant = 'keyword',
@@ -27,6 +38,7 @@ export function FilteringToolbar({
   selectedKeyword,
   onApply,
   showResetButton = false,
+  lazyLoadFilteringTab = false,
 }: FilteringToolbarProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
@@ -36,6 +48,29 @@ export function FilteringToolbar({
   }) => {
     onApply(selection)
     setIsFilterOpen(false)
+  }
+
+  const shouldRenderFilteringTab = isFilterOpen || !lazyLoadFilteringTab
+  const renderFilteringTab = () => {
+    if (!shouldRenderFilteringTab) return null
+
+    if (lazyLoadFilteringTab) {
+      return (
+        <FilteringTabLazy
+          variant={variant}
+          onApply={handleApply}
+          onClose={() => setIsFilterOpen(false)}
+        />
+      )
+    }
+
+    return (
+      <FilteringTab
+        variant={variant}
+        onApply={handleApply}
+        onClose={() => setIsFilterOpen(false)}
+      />
+    )
   }
 
   return (
@@ -53,11 +88,7 @@ export function FilteringToolbar({
           <SlidersVertical size={18} />
           <p className="cursor-pointer text-sm">필터</p>
         </DrawerTrigger>
-        <FilteringTab
-          variant={variant}
-          onApply={handleApply}
-          onClose={() => setIsFilterOpen(false)}
-        />
+        {renderFilteringTab()}
       </Drawer>
     </div>
   )

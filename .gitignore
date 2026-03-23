@@ -107,6 +107,7 @@ docker-compos
 # Playwright
 playwright-report/
 test-results/
+playwright/.auth/e2e-user.json
 
 # Lighthouse reports (Playwright perf)
 lighthouse/
@@ -115,3 +116,5 @@ artifacts/har/
 build.sh
 docker-compose.local.yml
 
+
+certificates

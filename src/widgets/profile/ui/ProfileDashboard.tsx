@@ -3,14 +3,7 @@
 import { ChevronLeft } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 
-import {
-  Avatar,
-  Nickname,
-  StatCards,
-  useMyProfileQuery,
-  useProfile,
-  useSyncMyProfile,
-} from '@/entities/user'
+import { Avatar, Nickname, StatCards, useMyProfileQuery } from '@/entities/user'
 
 import type { UserProfile } from '@/entities/user'
 
@@ -19,6 +12,15 @@ const FALLBACK_NICKNAME = '로딩중...'
 const FALLBACK_STAT_VALUE = 0
 const MAIN_PAGE_PATH = '/main'
 const MY_PAGE_PATH = '/mypage'
+const EMPTY_PROFILE = {
+  id: 0,
+  nickname: '',
+  profileImageUrl: '',
+  level: 0,
+  activeCardCount: 0,
+  consecutiveDays: 1,
+  winCount: 0,
+} as const
 
 interface ProfileDashboardProps {
   // layout이 서버에서 먼저 가져온 프로필
@@ -33,13 +35,12 @@ export function ProfileDashboard({
   const router = useRouter()
   const pathname = usePathname()
 
-  const profile = useProfile()
   // hydration 이후에는 client query가 최신 프로필을 계속 가져온다.
-  const { data: myProfile } = useMyProfileQuery()
-  // 초기 서버 주입값 또는 최신 query 값을 store에도 동기화한다.
-  useSyncMyProfile({ myProfile, initialProfile })
-  // 첫 렌더는 initialProfile, 이후에는 query/store 순으로 사용한다.
-  const resolvedProfile = myProfile ?? initialProfile ?? profile
+  const { data: myProfile } = useMyProfileQuery({
+    initialData: initialProfile ?? undefined,
+  })
+  // 첫 렌더는 initialProfile, 이후에는 query 값을 우선 사용한다.
+  const resolvedProfile = myProfile ?? initialProfile ?? EMPTY_PROFILE
 
   const isMainPage = pathname === MAIN_PAGE_PATH
   const isMyPage = pathname === MY_PAGE_PATH

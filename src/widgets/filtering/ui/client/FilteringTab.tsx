@@ -88,7 +88,7 @@ export function FilteringTab({ variant = 'keyword', onApply, onClose }: Filterin
   }
 
   return (
-    <DrawerContent className="mx-auto flex h-[60vh] max-h-[60vh] min-h-[50vh] w-full max-w-[var(--frame-max-width)] min-w-[var(--frame-min-width)] flex-col bg-[rgb(var(--color-background))]">
+    <DrawerContent className="mx-auto flex h-[60vh] max-h-[60vh] min-h-[50vh] w-full max-w-(--frame-max-width) min-w-(--frame-min-width) flex-col bg-[rgb(var(--color-background))]">
       <DrawerHeader>
         <DrawerTitle>카테고리 선택</DrawerTitle>
         <DrawerDescription></DrawerDescription>

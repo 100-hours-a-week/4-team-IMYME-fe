@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react'
 
-import { useMicrophone } from '@/shared'
+import { useMicrophone } from '@/shared/lib/useMicrophone'
 
 // 공통 녹음 컨트롤러가 UI에 제공하는 최소/공통 상태와 액션
 export type UseRecordControllerResult = {

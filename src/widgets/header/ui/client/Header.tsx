@@ -3,11 +3,14 @@
 import { Menu } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useCallback, useState } from 'react'
 
 import { useMenuModal, useProfileEditModal } from '@/widgets/header'
 
-const loadMenuModal = () => import('@/features/header-menu').then((m) => m.MenuModal)
+const MENU_BUTTON_ARIA_LABEL = '메뉴 열기'
+
+const loadMenuModal = () =>
+  import('@/features/header-menu/ui/client/MenuModal').then((module) => module.MenuModal)
 
 const MenuModalLazy = dynamic(loadMenuModal, {
   ssr: false,
@@ -16,7 +19,8 @@ const MenuModalLazy = dynamic(loadMenuModal, {
 
 // ✅ Lazy loaded
 // ✅ import 함수를 분리해서 preload에 재사용
-const loadProfileEditModal = () => import('@/features/profile-edit').then((m) => m.ProfileEditModal)
+const loadProfileEditModal = () =>
+  import('@/features/profile-edit/ui/ProfileEditModal').then((module) => module.ProfileEditModal)
 
 const ProfileEditModalLazy = dynamic(loadProfileEditModal, {
   // 모달은 클릭 후 뜨는 UI라 SSR 필요 없음(클라 전용 컴포넌트이면 특히)
@@ -34,19 +38,35 @@ export function Header({ showMenu = true, goMain = false }: HeaderProps) {
   const { menuOpen, handleMenuOpenChange } = useMenuModal()
   const { profileEditOpen, handleProfileEditOpenChange, handleProfileEditOpen } =
     useProfileEditModal()
+  const [hasRequestedMenuModalLoad, setHasRequestedMenuModalLoad] = useState(false)
+  const [hasRequestedProfileEditModalLoad, setHasRequestedProfileEditModalLoad] = useState(false)
 
   const router = useRouter()
+  const requestMenuModalLoad = useCallback(() => {
+    if (hasRequestedMenuModalLoad) return
+    setHasRequestedMenuModalLoad(true)
+    void loadMenuModal()
+  }, [hasRequestedMenuModalLoad])
+
+  const handleMenuTriggerMouseEnter = () => {
+    requestMenuModalLoad()
+  }
+
+  const handleMenuTriggerClick = () => {
+    requestMenuModalLoad()
+    handleMenuOpenChange(true)
+  }
+
+  const requestProfileEditModalLoad = useCallback(() => {
+    if (hasRequestedProfileEditModalLoad) return
+    setHasRequestedProfileEditModalLoad(true)
+  }, [hasRequestedProfileEditModalLoad])
+
   const handleProfileEditRequest = () => {
+    requestProfileEditModalLoad()
     handleMenuOpenChange(false)
     handleProfileEditOpen()
   }
-
-  // ✅ menuOpen 시점에 미리 chunk 로드
-  useEffect(() => {
-    if (menuOpen) {
-      loadProfileEditModal()
-    }
-  }, [menuOpen])
 
   return (
     <header className="flex w-full items-center justify-between px-3 py-4">
@@ -62,13 +82,24 @@ export function Header({ showMenu = true, goMain = false }: HeaderProps) {
       </span>
       {showMenu ? (
         <>
-          <MenuModalLazy
-            trigger={<Menu className="h-5 w-5 cursor-pointer" />}
-            open={menuOpen}
-            onOpenChange={handleMenuOpenChange}
-            onClickProfileEdit={handleProfileEditRequest}
-          />
-          {profileEditOpen ? (
+          <button
+            type="button"
+            aria-label={MENU_BUTTON_ARIA_LABEL}
+            onMouseEnter={handleMenuTriggerMouseEnter}
+            onFocus={handleMenuTriggerMouseEnter}
+            onClick={handleMenuTriggerClick}
+          >
+            <Menu className="h-5 w-5 cursor-pointer" />
+          </button>
+          {hasRequestedMenuModalLoad ? (
+            <MenuModalLazy
+              open={menuOpen}
+              onOpenChange={handleMenuOpenChange}
+              onClickProfileEdit={handleProfileEditRequest}
+              onMouseEnterProfileEditButton={requestProfileEditModalLoad}
+            />
+          ) : null}
+          {hasRequestedProfileEditModalLoad ? (
             <ProfileEditModalLazy
               open={profileEditOpen}
               onOpenChange={handleProfileEditOpenChange}

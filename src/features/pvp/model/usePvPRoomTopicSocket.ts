@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from 'react'
 
-import { useStompClient } from '@/shared'
+import { useStompClient } from '@/shared/lib/useStompClient'
 
 import { parsePvpSocketMessage } from './pvpSocketMessage'
 

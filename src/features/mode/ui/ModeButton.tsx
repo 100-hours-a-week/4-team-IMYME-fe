@@ -14,7 +14,7 @@ const MODE_BUTTON_VARIANTS = {
     label: 'PVP 모드',
   },
   challenge: {
-    icon: '👑',
+    icon: '🔥',
     label: '챌린지 모드',
   },
 } as const

@@ -8,6 +8,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'MINE',
   description: "IMYME's Project",
+  manifest: '/manifest.webmanifest',
   icons: {
     icon: [{ url: '/logo.png', type: 'image/png' }],
   },

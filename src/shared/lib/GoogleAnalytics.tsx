@@ -1,6 +1,11 @@
 import Script from 'next/script'
 
 export function GoogleAnalytics({ gaId }: { gaId: string }) {
+  // 개발 환경에서는 GA 스크립트를 로드하지 않는다.
+  if (process.env.NODE_ENV !== 'production') {
+    return null
+  }
+
   return (
     <>
       {/* 브라우저 onload 이후에 gtag 라이브러리를 로드해 초기 렌더 경로 영향 최소화 */}

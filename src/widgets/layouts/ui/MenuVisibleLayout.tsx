@@ -1,3 +1,5 @@
+'use client'
+
 import { Header } from '@/widgets/header'
 
 import type { ReactNode } from 'react'

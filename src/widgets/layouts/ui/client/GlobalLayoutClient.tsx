@@ -12,7 +12,8 @@ type GlobalLayoutClientProps = {
 }
 
 export function GlobalLayoutClient({ children }: GlobalLayoutClientProps) {
-  const shouldRenderAnalytics = Boolean(process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS)
+  const shouldRenderAnalytics =
+    process.env.NODE_ENV === 'production' && Boolean(process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS)
 
   return (
     <>

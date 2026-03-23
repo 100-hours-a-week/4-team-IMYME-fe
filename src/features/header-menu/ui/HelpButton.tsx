@@ -1,10 +1,14 @@
-import { toast } from 'sonner'
+'use client'
+
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/shared/ui/button'
 
 export function HelpButton() {
+  const router = useRouter()
+
   const handleHelp = () => {
-    toast.info('준비 중입니다!')
+    router.push('/help')
   }
   return (
     <Button

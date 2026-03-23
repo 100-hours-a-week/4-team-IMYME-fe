@@ -79,7 +79,7 @@ export function MicrophoneBox({
     <div className={WRAPPER_CLASSNAME}>
       <div className={BOX_CLASSNAME}>
         <p className="mt-6 text-sm">{title}</p>
-        <p className="text-sm">{description}</p>
+        <p className="max-w-75 text-center text-sm text-pretty">{description}</p>
         {warmupError ? <p className={ERROR_CLASSNAME}>{errorMessage}</p> : null}
         <button
           type="button"

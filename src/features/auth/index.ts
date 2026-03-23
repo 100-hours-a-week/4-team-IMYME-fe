@@ -10,3 +10,4 @@ export {
   ensureClientAccessToken,
   useEnsuredAccessToken,
 } from './model/client/useEnsuredAccessToken'
+export { registerMyDevice } from './api/registerMyDevice'

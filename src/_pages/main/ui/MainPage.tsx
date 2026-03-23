@@ -1,7 +1,9 @@
 import dynamic from 'next/dynamic'
 
+import { ChallengeModeButton } from '@/features/challenge/ui/ChallengeModeButton'
+import { ChallengeRankingCard } from '@/features/challenge/ui/ChallengeRankingCard'
 import { ModeButton } from '@/features/mode'
-import { RecentListHeader } from '@/shared'
+import { RecentListHeader } from '@/shared/ui/RecentListHeader'
 
 const RecentCardListLazy = dynamic(
   () => import('@/widgets/recent-card').then((module) => module.RecentCardList),
@@ -18,28 +20,24 @@ const RecentPvPListLazy = dynamic(
 )
 
 export function MainPage() {
+  const shouldRenderChallengeMode = process.env.NEXT_PUBLIC_CHALLENGE_OPEN === 'true'
+
   return (
     <div className="flex w-full flex-1 flex-col pb-6">
       <div className="mt-10 flex flex-col gap-6 pb-5">
         {/* 학습/대결 모드 버튼 */}
         <ModeButton variant="levelup" />
         <ModeButton variant="pvp" />
-        {process.env.NEXT_PUBLIC_CHALLENGE_OPEN === 'true' ? (
-          <ModeButton variant="challenge" />
-        ) : null}
+        {shouldRenderChallengeMode ? <ChallengeModeButton /> : null}
       </div>
       {/*챌린지 랭킹*/}
-      {process.env.NEXT_PUBLIC_CHALLENGE_OPEN === 'true' ? (
-        <div>
-          <p>어제의 랭킹</p>
-        </div>
-      ) : null}
+      {shouldRenderChallengeMode ? <ChallengeRankingCard /> : null}
       {/* 최근 학습 목록 */}
       <RecentListHeader variant="levelup" />
       <RecentCardListLazy />
       <RecentListHeader variant="pvp" />
       <RecentPvPListLazy />
-      {process.env.NEXT_PUBLIC_CHALLENGE_OPEN !== 'true' ? null : <>{/* 최근 대결 목록 */}</>}
+      {shouldRenderChallengeMode ? <>{/* 최근 대결 목록 */}</> : null}
     </div>
   )
 }

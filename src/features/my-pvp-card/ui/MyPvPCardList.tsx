@@ -25,10 +25,7 @@ type MyPvPCardListProps = {
 export function MyPvPCardList({ selectedCategory, selectedKeyword }: MyPvPCardListProps) {
   const router = useRouter()
   const hasFilteringCondition = Boolean(selectedCategory) || Boolean(selectedKeyword)
-  const myPvPCardListQuery = useMyPvPCardList({
-    ...(selectedCategory ? { categoryId: selectedCategory.id } : {}),
-    ...(selectedKeyword ? { keywordId: selectedKeyword.id } : {}),
-  })
+  const myPvPCardListQuery = useMyPvPCardList()
 
   if (myPvPCardListQuery.isLoading) {
     return <StatusMessage message={LOADING_MESSAGE} />
@@ -41,8 +38,21 @@ export function MyPvPCardList({ selectedCategory, selectedKeyword }: MyPvPCardLi
   const historyItems = myPvPCardListQuery.data?.ok
     ? getHistoryItems(myPvPCardListQuery.data.data.histories)
     : []
+  const filteredHistoryItems = hasFilteringCondition
+    ? historyItems.filter((history) => {
+        if (selectedCategory && history.category.id !== selectedCategory.id) {
+          return false
+        }
 
-  if (historyItems.length === 0) {
+        if (selectedKeyword && history.keyword.id !== selectedKeyword.id) {
+          return false
+        }
+
+        return true
+      })
+    : historyItems
+
+  if (filteredHistoryItems.length === 0) {
     return (
       <StatusMessage message={hasFilteringCondition ? EMPTY_FILTERED_MESSAGE : EMPTY_MESSAGE} />
     )
@@ -50,7 +60,7 @@ export function MyPvPCardList({ selectedCategory, selectedKeyword }: MyPvPCardLi
 
   return (
     <div className={LIST_CLASSNAME}>
-      {historyItems.map((history) => (
+      {filteredHistoryItems.map((history) => (
         <PvPCard
           key={history.historyId}
           historyId={history.historyId}

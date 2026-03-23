@@ -3,10 +3,10 @@
 import { useRouter } from 'next/navigation'
 
 import { PvPCard } from '@/entities/pvp-card'
-import { useMyPvPCardList } from '@/features/my-pvp-card'
-import { StatusMessage } from '@/shared'
+import { useMyPvPCardList } from '@/features/my-pvp-card/model/useMyPvPCardList'
+import { StatusMessage } from '@/shared/ui/StatusMessage'
 
-import type { MyPvPHistoryItem } from '@/features/my-pvp-card'
+import type { MyPvPHistoryItem } from '@/features/my-pvp-card/api/getMyPvPCardList'
 
 const LIST_CLASSNAME = 'mt-5 flex flex-col items-center gap-4'
 const RECENT_PVP_LIMIT = 3

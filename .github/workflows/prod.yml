@@ -1,9 +1,10 @@
-name: Frontend CI/CD prod mvp2
+name: Frontend CI for Kubernetes (ArgoCD Deploy)
 
 on:
   pull_request:
     branches:
       - main
+
   push:
     branches:
       - main
@@ -13,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: frontend-cicd-${{ github.ref }}
+  group: frontend-ci-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -109,10 +110,71 @@ jobs:
           ALLOW_E2E_LOGIN: ${{ secrets.ALLOW_PROD_E2E_LOGIN }}
           NEXT_PUBLIC_PVP_OPEN: ${{ secrets.PVP_PROD_OPEN }}
           NEXT_PUBLIC_CHALLENGE_OPEN: ${{ secrets.CHALLENGE_PROD_OPEN }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_VAPID_KEY }}
+          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+          NEXT_PUBLIC_ENABLE_FCM: ${{ secrets.NEXT_PUBLIC_ENABLE_FCM }}
         run: pnpm next build
 
-  ci-notify-success:
+  image-push:
     needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/arm64
+          build-args: |
+            NEXT_PUBLIC_KAKAO_REST_API_KEY=${{ secrets.NEXT_PUBLIC_KAKAO_REST_API_KEY }}
+            NEXT_PUBLIC_KAKAO_REDIRECT_URI=${{ secrets.NEXT_PUBLIC_PROD_KAKAO_REDIRECT_URI }}
+            NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_PROD_API_BASE_URL }}
+            NEXT_PUBLIC_SECURE=${{ secrets.NEXT_PUBLIC_PROD_SECURE }}
+            NEXT_PUBLIC_SERVER_URL=${{ secrets.NEXT_PUBLIC_PROD_SERVER_URL }}
+            NEXT_PUBLIC_PVP_OPEN=${{ secrets.PVP_PROD_OPEN }}
+            NEXT_PUBLIC_CHALLENGE_OPEN=${{ secrets.CHALLENGE_PROD_OPEN }}
+            NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+            NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+            NEXT_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+            NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+            NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+            NEXT_PUBLIC_FIREBASE_APP_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+            NEXT_PUBLIC_FIREBASE_VAPID_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_VAPID_KEY }}
+            NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+            NEXT_PUBLIC_ENABLE_FCM=${{ secrets.NEXT_PUBLIC_ENABLE_FCM }}
+          tags: |
+            219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:${{ github.sha }}
+            219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:prod-latest
+          cache-from: type=registry,ref=219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:buildcache
+          cache-to: type=registry,ref=219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:buildcache,mode=max
+
+  ci-notify-success:
+    needs: [ci]
     if: success()
     runs-on: ubuntu-latest
     steps:
@@ -126,7 +188,7 @@ jobs:
           color: 0x00ff00
 
   ci-notify-failure:
-    needs: ci
+    needs: [ci]
     if: failure()
     runs-on: ubuntu-latest
     steps:
@@ -181,164 +243,30 @@ jobs:
           description: ${{ steps.error_msg.outputs.msg }}
           color: 0xff0000
 
-  # 2) CD
-  cd:
-    needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-
-    steps:
-      # 1. Checkout
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # 2. AWS 자격증명 설정
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-
-      # 3. ECR 로그인
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      # 4. Docker Buildx 설정
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # 5. Docker 이미지 빌드 & ECR 푸시
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          platforms: linux/arm64
-          build-args: |
-            NEXT_PUBLIC_KAKAO_REST_API_KEY=${{ secrets.NEXT_PUBLIC_KAKAO_REST_API_KEY }}
-            NEXT_PUBLIC_KAKAO_REDIRECT_URI=${{ secrets.NEXT_PUBLIC_PROD_KAKAO_REDIRECT_URI }}
-            NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_PROD_API_BASE_URL }}
-            NEXT_PUBLIC_SECURE=${{ secrets.NEXT_PUBLIC_PROD_SECURE }}
-            NEXT_PUBLIC_SERVER_URL=${{ secrets.NEXT_PUBLIC_PROD_SERVER_URL }}
-            NEXT_PUBLIC_PVP_OPEN=${{ secrets.PVP_PROD_OPEN }}
-            NEXT_PUBLIC_CHALLENGE_OPEN=${{ secrets.CHALLENGE_PROD_OPEN }}
-          tags: |
-            219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:${{ github.sha }}
-            219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:prod-latest
-          cache-from: type=registry,ref=219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:buildcache
-          cache-to: type=registry,ref=219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:buildcache,mode=max
-
-      # 6. SSM으로 프로덕션 서버에 배포
-      - name: Deploy with SSM (docker compose)
-        run: |
-          set -euo pipefail
-
-          cat > /tmp/ssm-params.json << 'ENDJSON'
-          {
-            "commands": [
-              "set -eu",
-              "cd /home/ubuntu",
-              "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 219268921033.dkr.ecr.ap-northeast-2.amazonaws.com",
-              "IMAGE_URI=219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:prod-latest",
-              "docker pull $IMAGE_URI",
-              "docker compose up -d",
-              "docker image prune -f"
-            ]
-          }
-          ENDJSON
-
-          COMMAND_ID=$(aws ssm send-command \
-            --document-name "AWS-RunShellScript" \
-            --targets "Key=tag:server,Values=prod" \
-            --comment "frontend prod deploy (${GITHUB_SHA})" \
-            --parameters file:///tmp/ssm-params.json \
-            --region ap-northeast-2 \
-            --query "Command.CommandId" \
-            --output text)
-
-          echo "SSM Command ID: ${COMMAND_ID}"
-
-          for i in {1..60}; do
-            STATUS=$(aws ssm list-commands \
-              --command-id "${COMMAND_ID}" \
-              --region ap-northeast-2 \
-              --query "Commands[0].Status" \
-              --output text)
-            echo "SSM status: ${STATUS}"
-
-            if [ "${STATUS}" = "Success" ]; then
-              break
-            fi
-
-            if [ "${STATUS}" = "Failed" ] || [ "${STATUS}" = "Cancelled" ] || [ "${STATUS}" = "TimedOut" ] || [ "${STATUS}" = "Cancelling" ]; then
-              aws ssm list-command-invocations \
-                --command-id "${COMMAND_ID}" \
-                --details \
-                --region ap-northeast-2 \
-                --output json
-              exit 1
-            fi
-
-            sleep 10
-          done
-
-          if [ "${STATUS}" != "Success" ]; then
-            echo "SSM deploy timeout"
-            aws ssm list-command-invocations \
-              --command-id "${COMMAND_ID}" \
-              --details \
-              --region ap-northeast-2 \
-              --output json
-            exit 1
-          fi
-
-      # 7. 배포 후 스모크 테스트
-      - name: Post-deploy Smoke Test
-        run: |
-          set -euo pipefail
-
-          BASE_URL="${{ secrets.PROD_BASE_URL }}"
-
-          echo "🔎 Smoke 1) Health check: ${BASE_URL}/api/health"
-          curl -fsS "${BASE_URL}/api/health" >/dev/null
-
-          echo "🔎 Smoke 2) Main page (follow redirect) : ${BASE_URL}/"
-          curl -fsSL -o /tmp/home.html "${BASE_URL}/" >/dev/null
-
-          grep -qi "<html" /tmp/home.html || {
-            echo "❌ Main page is not HTML"
-            head -n 40 /tmp/home.html || true
-            exit 1
-          }
-
-          echo "✅ Frontend smoke tests passed"
-
-  cd-notify-success:
-    needs: cd
+  image-push-notify-success:
+    needs: [image-push]
     if: success()
     runs-on: ubuntu-latest
     steps:
-      - name: Discord CD success
+      - name: Discord image push success
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: success
-          title: '🟢 Frontend Deploy Success'
-          content: '프론트엔드 운영 서버 배포 완료!'
+          title: '🟢 Frontend Image Push Success'
+          content: '프론트엔드 운영 이미지 ECR 푸시 완료! 이후 배포는 ArgoCD가 수행합니다.'
           color: 0x00ff00
 
-  cd-notify-failure:
-    needs: cd
+  image-push-notify-failure:
+    needs: [image-push]
     if: failure()
     runs-on: ubuntu-latest
     steps:
-      - name: Discord CD failure
+      - name: Discord image push failure
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: failure
-          title: '🔴 Frontend Deploy Failed'
-          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 운영 서버 배포 실패!'
+          title: '🔴 Frontend Image Push Failed'
+          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 운영 이미지 ECR 푸시 실패!'
           color: 0xff0000

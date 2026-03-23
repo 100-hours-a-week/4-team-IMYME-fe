@@ -23,6 +23,7 @@ export function MyPage() {
         onApply={handleFilteringApply}
         showResetButton={false}
         variant="keyword"
+        lazyLoadFilteringTab={true}
       />
       <div className="bg-secondary mt-2 h-px w-full"></div>
       <ListTabs

@@ -33,6 +33,8 @@ const buttonVariants = cva(
         levelup_feedback_btn: 'bg-secondary w-40 h-10 rounded-2xl',
         matching_method_btn: 'w-80 h-20 min-h-20 border-secondary border rounded-xl gap-6',
         pvp_room_enter_btn: 'text-black/50 cursor-pointer pr-4',
+        ranking_show_feedback_btn:
+          'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_2px_1px_rgba(0,0,0,0.1)]',
       },
       size: {
         default: 'h-9 px-4 py-2',

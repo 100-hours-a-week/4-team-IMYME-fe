@@ -4,8 +4,9 @@ import { useRouter } from 'next/navigation'
 
 import { useClearProfile } from '@/entities/user'
 import { useClearAccesstoken } from '@/features/auth'
-import { logout } from '@/features/header-menu'
-import { Button } from '@/shared'
+import { Button } from '@/shared/ui/button'
+
+import { logout } from '../api/logout'
 
 export function LogoutButton() {
   const clearAccessToken = useClearAccesstoken()

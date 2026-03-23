@@ -4,8 +4,9 @@ import { useRouter } from 'next/navigation'
 
 import { Card, deleteCard } from '@/entities/card'
 import { useOptimisticActiveCardCount, useUserId } from '@/entities/user'
-import { useMyCardList } from '@/features/my-card'
-import { formatDate, StatusMessage } from '@/shared'
+import { useMyCardList } from '@/features/my-card/model/useMyCardList'
+import { formatDate } from '@/shared/lib/formatDate'
+import { StatusMessage } from '@/shared/ui/StatusMessage'
 
 const LIST_CLASSNAME = 'mt-5 flex flex-col items-center gap-4'
 const RECENT_LIMIT = 3

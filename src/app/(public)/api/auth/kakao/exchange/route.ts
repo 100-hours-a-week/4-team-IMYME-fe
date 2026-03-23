@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
       expiresIn,
       deviceUuid,
       user: {
+        id: user.id,
         nickname: user.nickname,
         profileImageUrl: user.profileImageUrl,
         level: user.level,
