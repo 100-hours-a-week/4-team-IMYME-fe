@@ -39,12 +39,11 @@ const getChallengeFeedbackFromResult = (
 ): ChallengeFeedback | undefined => {
   if (!challengeResult) return undefined
 
-  const myResult = challengeResult.myResult
-  const summary = challengeResult.message || FEEDBACK_WAITING_RESULT_MESSAGE
+  const feedback = challengeResult.myResult?.feedback
 
-  if (!myResult) {
+  if (!feedback) {
     return {
-      summary,
+      summary: FEEDBACK_WAITING_RESULT_MESSAGE,
       keywords: [challengeResult.keywordName],
       facts: FEEDBACK_NO_RESULT_MESSAGE,
       understanding: challengeResult.status,
@@ -53,11 +52,11 @@ const getChallengeFeedbackFromResult = (
   }
 
   return {
-    summary,
-    keywords: [challengeResult.keywordName],
-    facts: `점수 ${myResult.score}점`,
-    understanding: '',
-    personalized_feedback: `랭킹 결과 상태: ${challengeResult.status}`,
+    summary: feedback.summary,
+    keywords: feedback.keywords ?? [challengeResult.keywordName],
+    facts: feedback.facts,
+    understanding: feedback.understanding,
+    personalized_feedback: feedback.personalized_feedback,
   }
 }
 

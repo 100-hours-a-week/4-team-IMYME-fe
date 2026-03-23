@@ -9,10 +9,13 @@ export type ChallengeFeedback = {
 }
 
 export type MyChallengeResultSummary = {
-  attemptId?: number
+  attemptId: number
   score: number
-  rank?: number
-  feedback?: ChallengeFeedback
+  rank: number
+  percentile: number
+  durationSeconds: number
+  sttText: string
+  feedback?: ChallengeFeedback | null
 }
 
 export type MyChallengeResultData = {
@@ -20,15 +23,12 @@ export type MyChallengeResultData = {
   keywordName: string
   challengeDate: string
   status: string
-  message: string
-  expectedCompletionAt: string
   myResult?: MyChallengeResultSummary | null
 }
 
 type GetMyChallengeResultResponse = {
   success?: boolean
   data?: MyChallengeResultData
-  message?: string
   timestamp?: string
 }
 
